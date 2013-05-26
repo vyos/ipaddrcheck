@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 {
     char *address_str = "";    /* IP address string obtained from arguments */
     int action = 0;            /* Action associated with given check option */
-    int* actions;       /* Array of all given actions */
+    int* actions;              /* Array of all given actions */
     int action_count = 0;      /* Actions array size */
 
     int option_index = 0;      /* Number of the current option for getopt call */
@@ -159,7 +159,8 @@ int main(int argc, char* argv[])
     }
     else
     {
-         printf("Error: wrong number of arguments, one argument required!\n");
+         fprintf(stderr, "Error: wrong number of arguments, one argument required!\n");
+         print_help();
          return(EXIT_FAILURE);
     }
 
@@ -200,7 +201,6 @@ int main(int argc, char* argv[])
                 break;
             case IS_IPV4_HOST:
                 result = is_ipv4_host(address);
-                printf("rsult %d\n", result);
                 break;
             case IS_IPV4_NET:
                 /* XXX: Should we fail this check for single addresses? */
@@ -268,8 +268,8 @@ void print_help(void)
 void print_version(void)
 {
     printf("%s %s\n", PACKAGE_NAME, PACKAGE_VERSION);
-    printf("Copyright (C) Free Software Foundation, Inc.\n\
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
+    printf("Copyright (C) SO3Group 2013.\n\
+License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software: you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n");
 }
