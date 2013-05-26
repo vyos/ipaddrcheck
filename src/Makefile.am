@@ -1,6 +1,7 @@
-AM_CFLAGS = --pedantic -Wall -Werror -std=c99 -O2 -lcidr
-AM_LDFLAGS =
+AM_CFLAGS = --pedantic -Wall -Werror -std=c99 -O2
+AM_LDFLAGS = 
 
-iptest_SOURCES = iptest.c iptest.h
+ipaddrcheck_SOURCES = iptest.c iptest.h
+ipaddrcheck_LDFLAGS = -lcidr -lpcre
 
-bin_PROGRAMS = iptest
+bin_PROGRAMS = ipaddrcheck
