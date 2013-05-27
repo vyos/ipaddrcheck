@@ -1,5 +1,5 @@
 /*
- * ipaddrcheck.h: macros and functions for iptest IPv4/IPv6 validator
+ * ipaddrcheck_functions.c: functions for iptest IPv4/IPv6 validator
  *
  * Maintainer: Daniil Baturin <daniil at baturin dot org>
  *
@@ -21,49 +21,7 @@
  *
  */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <getopt.h>
-#include <pcre.h>
-#include <libcidr.h>
-
-#define INVALID_PROTO -1
-
-/* Option codes */
-#define IS_VALID              10
-#define IS_IPV4               20
-#define IS_IPV4_CIDR          30
-#define IS_IPV4_SINGLE        40
-#define IS_IPV4_HOST          50
-#define IS_IPV4_NET           60
-#define IS_IPV4_BROADCAST     70
-#define IS_IPV4_UNICAST       80
-#define IS_IPV4_MULTICAST     90
-#define IS_IPV4_RFC1918       100
-#define IS_IPV4_LOOPBACK      110
-#define IS_IPV4_LINKLOCAL     120
-#define IS_IPV6               130
-#define IS_IPV6_CIDR          140
-#define IS_IPV6_SINGLE        150
-#define IS_IPV6_HOST          160
-#define IS_IPV6_NET           170
-#define IS_IPV6_UNICAST       180
-#define IS_IPV6_MULTICAST     190
-#define IS_IPV6_LINKLOCAL     200
-#define HAS_MASK              210
-#define IS_VALID_INTF_ADDR    220
-
-#define RESULT_SUCCESS 1
-#define RESULT_FAILURE 0
-
-#define IPV4_MULTICAST "224.0.0.0/4"
-#define IPV4_LOOPBACK  "127.0.0.0/8"
-#define IPV4_LINKLOCAL "169.254.0.0/16"
-#define IPV4_RFC1918_A "10.0.0.0/8"
-#define IPV4_RFC1918_B "172.16.0.0/12"
-#define IPV4_RFC1918_C "192.168.0.0/16"
+#include "ipaddrcheck_functions.h"
 
 /*
  * Address string functions
@@ -124,6 +82,32 @@ int is_ipv4_cidr(char* address_str)
     return(result);
 }
 
+/* Is it a single dotted decimal address? */
+int is_ipv4_single(char* address_str)
+{
+    int result;
+
+    int offsets[1];
+    pcre *re;
+    int rc;
+    const char *error;
+    int erroffset;
+
+    re = pcre_compile("^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}$",
+                      0, &error, &erroffset, NULL);
+    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
+
+    if( rc < 0 )
+    {
+        result = RESULT_FAILURE;
+    }
+    else
+    {
+        result = RESULT_SUCCESS;
+    }
+
+    return(result);
+}
 
 /*
  * Address checking functions that rely on libcidr
@@ -296,15 +280,90 @@ int is_ipv4_rfc1918(CIDR *address)
    with or withour mask */
 int is_ipv6(CIDR *address)
 {
-    return RESULT_FAILURE;
+     int result;
+
+     if( cidr_get_proto(address) == CIDR_IPV6 )
+     {
+          result = RESULT_SUCCESS;
+     }
+     else
+     {
+          result = RESULT_FAILURE;
+     }
+
+     return(result);
 }
 
+/* Is it a correct IPv6 host address? */
 int is_ipv6_host(CIDR *address)
 {
-    return RESULT_FAILURE;
+    int result;
+
+    if( (cidr_get_proto(address) == CIDR_IPV6) &&
+        ((cidr_equals(address, cidr_addr_network(address)) < 0) ||
+        (cidr_get_pflen(address) == 128)) )
+    {
+         result = RESULT_SUCCESS;
+    }
+    else
+    {
+         result = RESULT_FAILURE;
+    }
+
+    return(result);
 }
 
+/* Is it a correct IPv6 network address? */
 int is_ipv6_net(CIDR *address)
 {
-    return RESULT_FAILURE;
+    int result;
+
+    if( (cidr_get_proto(address) == CIDR_IPV6) &&
+        (cidr_equals(address, cidr_addr_network(address)) == 0) )
+    {
+         result = RESULT_SUCCESS;
+    }
+    else
+    {
+         result = RESULT_FAILURE;
+    }
+
+    return(result);
 }
+
+/* Is it an IPv6 multicast address? */
+int is_ipv6_multicast(CIDR *address)
+{
+    int result;
+
+    if( (cidr_get_proto(address) == CIDR_IPV6) &&
+        (cidr_contains(cidr_from_str(IPV6_MULTICAST), address) == 0) )
+    {
+        result = RESULT_SUCCESS;
+    }
+    else
+    {
+        result = RESULT_FAILURE;
+    }
+
+    return(result);
+}
+
+/* Is it an IPv6 link-local address? */
+int is_ipv6_link_local(CIDR *address)
+{
+    int result;
+
+    if( (cidr_get_proto(address) == CIDR_IPV6) &&
+        (cidr_contains(cidr_from_str(IPV6_LINKLOCAL), address) == 0) )
+    {
+        result = RESULT_SUCCESS;
+    }
+    else
+    {
+        result = RESULT_FAILURE;
+    }
+
+    return(result);
+}
+

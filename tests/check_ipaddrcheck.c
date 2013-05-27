@@ -1,5 +1,5 @@
 #include <check.h>
-#include "../src/iptest.h"
+#include "../src/ipaddrcheck_functions.h"
 
 START_TEST (test_has_mask)
 {
@@ -176,6 +176,84 @@ START_TEST (test_is_ipv4_rfc1918)
 }
 END_TEST
 
+START_TEST (test_is_ipv6)
+{
+    char* good_address_str = "2001:db8:1fe::49";
+    CIDR* good_address = cidr_from_str(good_address_str);
+    ck_assert_int_eq(is_ipv6(good_address), RESULT_SUCCESS);
+    cidr_free(good_address);
+
+    char* bad_address_str = "192.0.2.44";
+    CIDR* bad_address = cidr_from_str(bad_address_str);
+    ck_assert_int_eq(is_ipv6(bad_address), RESULT_FAILURE);
+    cidr_free(bad_address);
+
+}
+END_TEST
+
+START_TEST (test_is_ipv6_host)
+{
+    char* good_address_str_no_mask = "2001:db8:a::1";
+    CIDR* good_address = cidr_from_str(good_address_str_no_mask);
+    ck_assert_int_eq(is_ipv6_host(good_address), RESULT_SUCCESS);
+    cidr_free(good_address);
+
+    char* good_address_str_cidr = "2001:db8:b::100/64";
+    CIDR* good_address_cidr = cidr_from_str(good_address_str_cidr);
+    ck_assert_int_eq(is_ipv6_host(good_address_cidr), RESULT_SUCCESS);
+    cidr_free(good_address_cidr);
+
+    char* bad_address_str = "2001:db8:f::/48";
+    CIDR* bad_address = cidr_from_str(bad_address_str);
+    ck_assert_int_eq(is_ipv6_host(bad_address), RESULT_FAILURE);
+    cidr_free(bad_address);
+}
+END_TEST
+
+START_TEST (test_is_ipv6_net)
+{
+    char* good_address_str = "2001:db8::/32";
+    CIDR* good_address = cidr_from_str(good_address_str);
+    ck_assert_int_eq(is_ipv6_net(good_address), RESULT_SUCCESS);
+    cidr_free(good_address);
+
+    char* bad_address_str = "2001:db8:34::1/64";
+    CIDR* bad_address = cidr_from_str(bad_address_str);
+    ck_assert_int_eq(is_ipv6_net(bad_address), RESULT_FAILURE);
+    cidr_free(bad_address);
+}
+END_TEST
+
+START_TEST (test_is_ipv6_multicast)
+{
+    char* good_address_str = "ff02::6";
+    CIDR* good_address = cidr_from_str(good_address_str);
+    ck_assert_int_eq(is_ipv6_multicast(good_address), RESULT_SUCCESS);
+    cidr_free(good_address);
+
+    char* bad_address_str = "2001:db8::1";
+    CIDR* bad_address = cidr_from_str(bad_address_str);
+    ck_assert_int_eq(is_ipv6_multicast(bad_address), RESULT_FAILURE);
+    cidr_free(bad_address);
+}
+END_TEST
+
+START_TEST (test_is_ipv6_link_local)
+{
+    CIDR* address = NULL;
+
+    char* good_address_str = "fe80::5ab0:35ff:fef2:9365";
+    address = cidr_from_str(good_address_str);
+    ck_assert_int_eq(is_ipv6_link_local(address), RESULT_SUCCESS);
+    cidr_free(address);
+
+    char* bad_address_str = "2001:db8::2";
+    address = cidr_from_str(bad_address_str);
+    ck_assert_int_eq(is_ipv6_link_local(address), RESULT_FAILURE);
+    cidr_free(address);
+}
+END_TEST
+
 
 Suite *ipaddrcheck_suite(void)
 {
@@ -194,6 +272,11 @@ Suite *ipaddrcheck_suite(void)
     tcase_add_test(tc_core, test_is_ipv4_loopback);
     tcase_add_test(tc_core, test_is_ipv4_link_local);
     tcase_add_test(tc_core, test_is_ipv4_rfc1918);
+    tcase_add_test(tc_core, test_is_ipv6);
+    tcase_add_test(tc_core, test_is_ipv6_host);
+    tcase_add_test(tc_core, test_is_ipv6_net);
+    tcase_add_test(tc_core, test_is_ipv6_multicast);
+    tcase_add_test(tc_core, test_is_ipv6_link_local);
 
     suite_add_tcase(s, tc_core);
 

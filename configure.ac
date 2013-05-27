@@ -1,6 +1,7 @@
 AC_INIT([iptest], [0.1], [daniil@baturin.org])
 
-AC_PROG_CC
+#AC_PROG_CC
+AM_PROG_CC_C_O
 
 AC_CHECK_HEADER(pcre.h)
 AC_CHECK_HEADER(libcidr.h)

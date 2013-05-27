@@ -21,7 +21,31 @@
 
 #include <errno.h>
 #include "config.h"
-#include "iptest.h"
+#include "ipaddrcheck_functions.h"
+
+/* Option codes */
+#define IS_VALID              10
+#define IS_IPV4               20
+#define IS_IPV4_CIDR          30
+#define IS_IPV4_SINGLE        40
+#define IS_IPV4_HOST          50
+#define IS_IPV4_NET           60
+#define IS_IPV4_BROADCAST     70
+#define IS_IPV4_UNICAST       80
+#define IS_IPV4_MULTICAST     90
+#define IS_IPV4_RFC1918       100
+#define IS_IPV4_LOOPBACK      110
+#define IS_IPV4_LINKLOCAL     120
+#define IS_IPV6               130
+#define IS_IPV6_CIDR          140
+#define IS_IPV6_SINGLE        150
+#define IS_IPV6_HOST          160
+#define IS_IPV6_NET           170
+#define IS_IPV6_UNICAST       180
+#define IS_IPV6_MULTICAST     190
+#define IS_IPV6_LINKLOCAL     200
+#define HAS_MASK              210
+#define IS_VALID_INTF_ADDR    220
 
 static const struct option options[] =
 {
@@ -45,6 +69,7 @@ static const struct option options[] =
     { "is-ipv6-multicast",     no_argument, NULL, 's' },
     { "is-ipv6-link-local",    no_argument, NULL, 't' },
     { "is-valid-intf-address", no_argument, NULL, 'u' },
+    { "legacy",                no_argument, NULL, 'w' },
     { "version",               no_argument, NULL, 'z' },
     { NULL,                    no_argument, NULL, 0   }
 };
@@ -73,7 +98,7 @@ int main(int argc, char* argv[])
         return(EXIT_FAILURE);
     }
 
-    while( (optc = getopt_long(argc, argv, "abcdv?", options, &option_index)) != -1 )
+    while( (optc = getopt_long(argc, argv, "abcdefghijklmnoprstuz?", options, &option_index)) != -1 )
     {
          switch(optc)
          {
@@ -155,7 +180,6 @@ int main(int argc, char* argv[])
     if( (argc - optind) == 1 )
     {
          address_str = argv[optind];
-         printf("%s\n", address_str);
     }
     else
     {
@@ -193,11 +217,7 @@ int main(int argc, char* argv[])
                 result = is_ipv4_cidr(address_str);
                 break;
             case IS_IPV4_SINGLE:
-                if( !(is_ipv4(address) && has_mask(address_str)) )
-                {
-                    result = RESULT_FAILURE;
-                }
-                /* No need to change it in case of success */
+                result = is_ipv4_single(address_str);
                 break;
             case IS_IPV4_HOST:
                 result = is_ipv4_host(address);
@@ -224,12 +244,22 @@ int main(int argc, char* argv[])
             case IS_IPV6:
                 result = is_ipv6(address);
                 break;
+            case IS_IPV6_CIDR:
+                break;
+            case IS_IPV6_SINGLE:
+                break;
             case IS_IPV6_HOST:
                 result = is_ipv6_host(address);
                 break;
             case IS_IPV6_NET:
                 result = is_ipv6_net(address);
                 break;
+            case IS_IPV6_MULTICAST:
+                 result = is_ipv6_multicast(address);
+                 break;
+            case IS_IPV6_LINKLOCAL:
+                 result = is_ipv6_link_local(address);
+                 break;
         }
         printf("action: %d\n", actions[action_count]);
         action_count--;
