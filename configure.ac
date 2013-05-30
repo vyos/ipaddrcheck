@@ -1,4 +1,5 @@
-AC_INIT([iptest], [0.1], [daniil@baturin.org])
+AC_INIT([ipaddrcheck], [0.1], [daniil@baturin.org], [ipaddrcheck], [https://github.com/SO3Group/ipaddrcheck])
+AC_COPYRIGHT([Copyright (c) 2013 SO3Group.])
 
 #AC_PROG_CC
 AM_PROG_CC_C_O
