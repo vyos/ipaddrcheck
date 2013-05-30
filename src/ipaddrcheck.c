@@ -1,5 +1,5 @@
 /*
- * iptest.c: iptest IPv4/IPv6 validator
+ * ipaddrcheck.c: an IPv4/IPv6 validator
  *
  * Maintainer: Daniil Baturin <daniil at baturin dot org>
  *
