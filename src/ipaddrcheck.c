@@ -287,7 +287,26 @@ void print_help(void)
     static const char *message = \
 "--is-valid STR    Check if STR is a valid IPv4 or IPv6 address\n\
                    or subnet\n\
---is-ipv4 STR Check if STR is a valid IPv4 address with mask\n";
+--is-ipv4 STR Check if STR is a valid IPv4 address with mask \n\
+--is-ipv4-cidr STR  Check if STR is a valid CIDR-formatted address \n\
+--is-ipv4-single   Check if STR is a valid single address (i.e. with no mask) \n\
+--is-ipv4-host  Check if STR is a host address \n\
+--is-ipv4-net   Check if STR is a network address \n\
+--is-ipv4-broadcast  Check if STR is a broadcast address \n\
+--is-ipv4-multicast  Check if STR is a multicast address \n\
+--is-ipv4-loopback  Check if STR is a loopback address \n\
+--is-ipv4-link-local Check if STR is a link-local address \n\
+--is-ipv4-rfc1918 Check if STR is a private (RFC1918) address \n\
+--is-ipv6  Check if STR is a valid IPv6 address \n\
+--is-ipv6-cidr Check if STR is a CIDR-formatted IPv6 address \n\
+--is-ipv6-single Check if STR is an IPv6 address with no mask \n\
+--is-ipv6-host Check if STR is an IPv6 host address \n\
+--is-ipv6-net Check if STR is an IPv6 network address \n\
+--is-ipv6-multicast Check if STR is an IPv6 multicast address \n\
+--is-ipv6-link-local Check if STR is an IPv6 link-local address \n\
+--is-valid-intf-address Check if STR is an IPv4 or IPv6 address that can be used assigned to a network interface \n\
+--version  Print version information and exit \n\
+--help Print this message and exit";
 
     printf("%s", message);
 }
