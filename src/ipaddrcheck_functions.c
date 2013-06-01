@@ -244,7 +244,11 @@ int is_ipv4_broadcast(CIDR *address)
 {
     int result;
 
-    if( cidr_equals(address, cidr_addr_broadcast(address)) == 0 )
+    /* The very concept of broadcast address doesn't apply to
+       IPv6 and point-to-point or /32 IPv4 */
+    if( (cidr_get_proto(address) == CIDR_IPV4) &&
+        (cidr_equals(address, cidr_addr_broadcast(address)) == 0 ) &&
+        (cidr_get_pflen(address) < 31) )
     {
         result = RESULT_SUCCESS;
     }

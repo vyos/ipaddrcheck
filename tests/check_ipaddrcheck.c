@@ -161,6 +161,16 @@ START_TEST (test_is_ipv4_broadcast)
     CIDR* bad_address = cidr_from_str(bad_address_str);
     ck_assert_int_eq(is_ipv4_broadcast(bad_address), RESULT_FAILURE);
     cidr_free(bad_address);
+
+    char* bad_address_str_ptp = "192.0.2.1/31";
+    CIDR* bad_address_ptp = cidr_from_str(bad_address_str_ptp);
+    ck_assert_int_eq(is_ipv4_broadcast(bad_address_ptp), RESULT_FAILURE);
+    cidr_free(bad_address_ptp);
+
+    char* bad_address_str_v6 = "2001:0db8:ffff:ffff:ffff:ffff:ffff:ffff/32";
+    CIDR* bad_address_v6 = cidr_from_str(bad_address_str_v6);
+    ck_assert_int_eq(is_ipv4_broadcast(bad_address_v6), RESULT_FAILURE);
+    cidr_free(bad_address_v6);
 }
 END_TEST
 
