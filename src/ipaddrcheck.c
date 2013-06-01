@@ -246,8 +246,10 @@ int main(int argc, char* argv[])
                 result = is_ipv6(address);
                 break;
             case IS_IPV6_CIDR:
+                result = is_ipv6_cidr(address_str);
                 break;
             case IS_IPV6_SINGLE:
+                result = is_ipv6_single(address_str);
                 break;
             case IS_IPV6_HOST:
                 result = is_ipv6_host(address);
