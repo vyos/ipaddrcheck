@@ -62,8 +62,43 @@ START_TEST (test_is_ipv4_cidr)
     char* address_str_no_mask = "192.0.2.1";
     ck_assert_int_eq(is_ipv4_cidr(address_str_no_mask), RESULT_FAILURE);
 
+    /* libcidr allows it, but we don't want to support it */
     char* address_str_decimal_mask = "192.0.2.1/255.255.255.0";
     ck_assert_int_eq(is_ipv4_cidr(address_str_decimal_mask), RESULT_FAILURE);
+}
+END_TEST
+
+START_TEST (test_is_ipv4_single)
+{
+    char* good_address_str = "192.0.2.1";
+    ck_assert_int_eq(is_ipv4_single(good_address_str), RESULT_SUCCESS);
+
+    char* bad_address_str = "192.0.2.1/25";
+    ck_assert_int_eq(is_ipv4_single(bad_address_str), RESULT_FAILURE);
+}
+END_TEST
+
+START_TEST (test_is_ipv6_cidr)
+{
+    char* good_address_str = "2001:db8:abcd::/64";
+    ck_assert_int_eq(is_ipv6_cidr(good_address_str), RESULT_SUCCESS);
+
+    char* address_str_no_mask = "2001:db8::1";
+    ck_assert_int_eq(is_ipv6_cidr(address_str_no_mask), RESULT_FAILURE);
+
+    /* libcidr allows fully spellt hex masks, but we don't want to support it */
+    char* address_str_decimal_mask = "::/0:0:0:0:0:0:0:0";
+    ck_assert_int_eq(is_ipv6_cidr(address_str_decimal_mask), RESULT_FAILURE);
+}
+END_TEST
+
+START_TEST (test_is_ipv6_single)
+{
+    char* good_address_str = "2001:db8::10";
+    ck_assert_int_eq(is_ipv6_single(good_address_str), RESULT_SUCCESS);
+
+    char* bad_address_str = "2001:db8::/32";
+    ck_assert_int_eq(is_ipv6_single(bad_address_str), RESULT_FAILURE);
 }
 END_TEST
 
@@ -285,6 +320,9 @@ Suite *ipaddrcheck_suite(void)
     tcase_add_test(tc_core, test_has_mask);
     tcase_add_test(tc_core, test_is_valid_address);
     tcase_add_test(tc_core, test_is_ipv4_cidr);
+    tcase_add_test(tc_core, test_is_ipv4_single);
+    tcase_add_test(tc_core, test_is_ipv6_cidr);
+    tcase_add_test(tc_core, test_is_ipv6_single);
     tcase_add_test(tc_core, test_is_ipv4);
     tcase_add_test(tc_core, test_is_ipv4_host);
     tcase_add_test(tc_core, test_is_ipv4_net);

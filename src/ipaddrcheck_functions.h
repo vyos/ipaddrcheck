@@ -46,6 +46,8 @@
 int has_mask(char* address_str);
 int is_ipv4_cidr(char* address_str);
 int is_ipv4_single(char* address_str);
+int is_ipv6_cidr(char* address_str);
+int is_ipv6_single(char* address_str);
 int is_valid_address(CIDR *address);
 int is_ipv4(CIDR *address);
 int is_ipv4_host(CIDR *address);

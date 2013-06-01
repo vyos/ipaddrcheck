@@ -109,6 +109,60 @@ int is_ipv4_single(char* address_str)
     return(result);
 }
 
+/* Is it an IPv6 address with prefix length? */
+int is_ipv6_cidr(char* address_str)
+{
+    int result;
+
+    int offsets[1];
+    pcre *re;
+    int rc;
+    const char *error;
+    int erroffset;
+
+    re = pcre_compile("^((([0-9a-fA-F\\:])+)(\\/\\d{1,3}))$",
+                      0, &error, &erroffset, NULL);
+    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
+
+    if( rc < 0 )
+    {
+        result = RESULT_FAILURE;
+    }
+    else
+    {
+        result = RESULT_SUCCESS;
+    }
+
+    return(result);
+}
+
+/* Is it a single IPv6 address? */
+int is_ipv6_single(char* address_str)
+{
+    int result;
+
+    int offsets[1];
+    pcre *re;
+    int rc;
+    const char *error;
+    int erroffset;
+
+    re = pcre_compile("^(([0-9a-fA-F\\:])+)$",
+                      0, &error, &erroffset, NULL);
+    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
+
+    if( rc < 0 )
+    {
+        result = RESULT_FAILURE;
+    }
+    else
+    {
+        result = RESULT_SUCCESS;
+    }
+
+    return(result);
+}
+
 /*
  * Address checking functions that rely on libcidr
  */
