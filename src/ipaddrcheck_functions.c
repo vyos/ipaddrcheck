@@ -66,7 +66,7 @@ int is_ipv4_cidr(char* address_str)
     const char *error;
     int erroffset;
 
-    re = pcre_compile("^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}/\\d{1,2}$",
+    re = pcre_compile("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0)(\\/([1-3][0-9]|0)))$",
                       0, &error, &erroffset, NULL);
     rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
 
@@ -93,7 +93,7 @@ int is_ipv4_single(char* address_str)
     const char *error;
     int erroffset;
 
-    re = pcre_compile("^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}$",
+    re = pcre_compile("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0))$",
                       0, &error, &erroffset, NULL);
     rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
 
