@@ -71,6 +71,7 @@ static const struct option options[] =
     { "is-valid-intf-address", no_argument, NULL, 'u' },
     { "legacy",                no_argument, NULL, 'w' },
     { "version",               no_argument, NULL, 'z' },
+    { "help",                  no_argument, NULL, '?' },
     { NULL,                    no_argument, NULL, 0   }
 };
 
