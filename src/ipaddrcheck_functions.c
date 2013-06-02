@@ -145,6 +145,42 @@ int is_ipv6_single(char* address_str)
     return(result);
 }
 
+/* Is it a CIDR-formatted IPv4 or IPv6 address? */
+int is_any_cidr(char* address_str)
+{
+    int result;
+
+    if( (is_ipv4_cidr(address_str) == RESULT_SUCCESS) ||
+        (is_ipv6_cidr(address_str) == RESULT_SUCCESS) )
+    {
+        result = RESULT_SUCCESS;
+    }
+    else
+    {
+        result = RESULT_FAILURE;
+    }
+
+    return(result);
+}
+
+/* Is it a single IPv4 or IPv6 address? */
+int is_any_single(char* address_str)
+{
+    int result;
+
+    if( (is_ipv4_single(address_str) == RESULT_SUCCESS) ||
+        (is_ipv6_single(address_str) == RESULT_SUCCESS) )
+    {
+        result = RESULT_SUCCESS;
+    }
+    else
+    {
+        result = RESULT_FAILURE;
+    }
+
+    return(result);
+}
+
 /*
  * Address checking functions that rely on libcidr
  */

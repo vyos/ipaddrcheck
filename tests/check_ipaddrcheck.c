@@ -89,6 +89,38 @@ START_TEST (test_is_ipv6_single)
 }
 END_TEST
 
+START_TEST (test_is_any_cidr)
+{
+    char* good_address_str_v4 = "192.0.2.1/21";
+    ck_assert_int_eq(is_any_cidr(good_address_str_v4), RESULT_SUCCESS);
+
+    char* address_str_no_mask_v4 = "192.0.2.1";
+    ck_assert_int_eq(is_any_cidr(address_str_no_mask_v4), RESULT_FAILURE);
+
+    char* good_address_str_v6 = "2001:db8::a/56";
+    ck_assert_int_eq(is_any_cidr(good_address_str_v6), RESULT_SUCCESS);
+
+    char* address_str_no_mask_v6 = "2001:db8:a:b::c";
+    ck_assert_int_eq(is_any_cidr(address_str_no_mask_v6), RESULT_FAILURE);
+}
+END_TEST
+
+START_TEST (test_is_any_single)
+{
+    char* good_address_str_v4 = "192.0.2.1";
+    ck_assert_int_eq(is_any_single(good_address_str_v4), RESULT_SUCCESS);
+
+    char* bad_address_str_v4 = "192.0.2.1/25";
+    ck_assert_int_eq(is_any_single(bad_address_str_v4), RESULT_FAILURE);
+
+    char* good_address_str_v6 = "2001:db8::10";
+    ck_assert_int_eq(is_any_single(good_address_str_v6), RESULT_SUCCESS);
+
+    char* bad_address_str_v6 = "2001:db8::/32";
+    ck_assert_int_eq(is_any_single(bad_address_str_v6), RESULT_FAILURE);
+}
+END_TEST
+
 START_TEST (test_is_ipv4)
 {
     char* good_address_str = "192.0.2.1";
@@ -314,12 +346,13 @@ Suite *ipaddrcheck_suite(void)
 
     /* Core test case */
     TCase *tc_core = tcase_create("Core");
-    tcase_add_test(tc_core, test_has_mask);
     tcase_add_test(tc_core, test_is_valid_address);
     tcase_add_test(tc_core, test_is_ipv4_cidr);
     tcase_add_test(tc_core, test_is_ipv4_single);
     tcase_add_test(tc_core, test_is_ipv6_cidr);
     tcase_add_test(tc_core, test_is_ipv6_single);
+    tcase_add_test(tc_core, test_is_any_cidr);
+    tcase_add_test(tc_core, test_is_any_single);
     tcase_add_test(tc_core, test_is_ipv4);
     tcase_add_test(tc_core, test_is_ipv4_host);
     tcase_add_test(tc_core, test_is_ipv4_net);

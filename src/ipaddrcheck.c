@@ -45,6 +45,8 @@
 #define IS_IPV6_MULTICAST     190
 #define IS_IPV6_LINKLOCAL     200
 #define IS_VALID_INTF_ADDR    220
+#define IS_ANY_CIDR           230
+#define IS_ANY_SINGLE         240
 
 static const struct option options[] =
 {
@@ -52,6 +54,8 @@ static const struct option options[] =
     { "is-ipv4",               no_argument, NULL, 'c' },
     { "is-ipv4-cidr",          no_argument, NULL, 'd' },
     { "is-ipv4-single",        no_argument, NULL, 'e' },
+    { "is-any-cidr",           no_argument, NULL, 'A' },
+    { "is-any-single",         no_argument, NULL, 'B' },
     { "is-ipv4-host",          no_argument, NULL, 'f' },
     { "is-ipv4-net",           no_argument, NULL, 'g' },
     { "is-ipv4-broadcast",     no_argument, NULL, 'h' },
@@ -97,7 +101,7 @@ int main(int argc, char* argv[])
         return(EXIT_FAILURE);
     }
 
-    while( (optc = getopt_long(argc, argv, "abcdefghijklmnoprstuz?", options, &option_index)) != -1 )
+    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzAB?", options, &option_index)) != -1 )
     {
          switch(optc)
          {
@@ -158,6 +162,12 @@ int main(int argc, char* argv[])
                  break;
              case 'u':
                  action = IS_VALID_INTF_ADDR;
+                 break;
+             case 'A':
+                 action = IS_ANY_CIDR;
+                 break;
+             case 'B':
+                 action = IS_ANY_SINGLE;
                  break;
              case '?':
                  print_help();
@@ -256,6 +266,12 @@ int main(int argc, char* argv[])
                  break;
             case IS_IPV6_LINKLOCAL:
                  result = is_ipv6_link_local(address);
+                 break;
+            case IS_ANY_CIDR:
+                 result = is_any_cidr(address_str);
+                 break;
+            case IS_ANY_SINGLE:
+                 result = is_any_single(address_str);
                  break;
         }
         printf("action: %d\n", actions[action_count]);
