@@ -48,7 +48,7 @@ int is_ipv4_cidr(char* address_str)
     const char *error;
     int erroffset;
 
-    re = pcre_compile("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0)(\\/([1-3][0-9]|0)))$",
+    re = pcre_compile("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0)\\/([1-9]\\d*|0))$",
                       0, &error, &erroffset, NULL);
     rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
 
@@ -443,3 +443,26 @@ int is_ipv6_link_local(CIDR *address)
     return(result);
 }
 
+/* Is it an address that can belong an interface? */
+int is_valid_intf_address(CIDR *address, char* address_str, int allow_loopback)
+{
+    int result;
+
+    if( (is_ipv4_broadcast(address) == RESULT_FAILURE) &&
+        (is_ipv4_multicast(address) == RESULT_FAILURE) &&
+        (is_ipv6_multicast(address) == RESULT_FAILURE) &&
+        ((is_ipv4_loopback(address) == RESULT_FAILURE) || (allow_loopback == LOOPBACK_ALLOWED)) &&
+        (cidr_equals(address, cidr_from_str(IPV6_LOOPBACK)) != 0) &&
+        (cidr_equals(address, cidr_from_str(IPV4_UNSPECIFIED)) != 0) &&
+        (cidr_contains(cidr_from_str(IPV4_THIS), address) != 0) &&
+        (is_any_cidr(address_str) == RESULT_SUCCESS) )
+    {
+        result = RESULT_SUCCESS;
+    }
+    else
+    {
+        result = RESULT_FAILURE;
+    }
+
+    return(result);
+}

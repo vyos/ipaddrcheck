@@ -43,8 +43,11 @@ END_TEST
 
 START_TEST (test_is_ipv4_cidr)
 {
-    char* good_address_str = "192.0.2.1/21";
-    ck_assert_int_eq(is_ipv4_cidr(good_address_str), RESULT_SUCCESS);
+    char* good_address_str_1 = "192.0.2.1/8";
+    ck_assert_int_eq(is_ipv4_cidr(good_address_str_1), RESULT_SUCCESS);
+
+    char* good_address_str_2 = "192.0.2.1/21";
+    ck_assert_int_eq(is_ipv4_cidr(good_address_str_2), RESULT_SUCCESS);
 
     char* address_str_no_mask = "192.0.2.1";
     ck_assert_int_eq(is_ipv4_cidr(address_str_no_mask), RESULT_FAILURE);
@@ -339,6 +342,22 @@ START_TEST (test_is_ipv6_link_local)
 }
 END_TEST
 
+START_TEST (test_is_valid_intf_address)
+{
+    char* good_address_str_v4 = "192.0.2.5/24";
+    CIDR* good_address_v4 = cidr_from_str(good_address_str_v4);
+    ck_assert_int_eq(is_valid_intf_address(good_address_v4, good_address_str_v4, NO_LOOPBACK), RESULT_SUCCESS);
+    cidr_free(good_address_v4);
+
+    char* good_address_str_v6 = "2001:db8:a:b::14/64";
+    CIDR* good_address_v6 = cidr_from_str(good_address_str_v6);
+    ck_assert_int_eq(is_valid_intf_address(good_address_v6, good_address_str_v6, NO_LOOPBACK), RESULT_SUCCESS);
+    cidr_free(good_address_v6);
+
+
+}
+END_TEST
+
 
 Suite *ipaddrcheck_suite(void)
 {
@@ -366,6 +385,7 @@ Suite *ipaddrcheck_suite(void)
     tcase_add_test(tc_core, test_is_ipv6_net);
     tcase_add_test(tc_core, test_is_ipv6_multicast);
     tcase_add_test(tc_core, test_is_ipv6_link_local);
+    tcase_add_test(tc_core, test_is_valid_intf_address);
 
     suite_add_tcase(s, tc_core);
 

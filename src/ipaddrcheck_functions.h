@@ -37,11 +37,17 @@
 #define IPV4_MULTICAST "224.0.0.0/4"
 #define IPV4_LOOPBACK  "127.0.0.0/8"
 #define IPV4_LINKLOCAL "169.254.0.0/16"
+#define IPV4_UNSPECIFIED "0.0.0.0/0"
+#define IPV4_THIS        "0.0.0.0/8"
 #define IPV4_RFC1918_A "10.0.0.0/8"
 #define IPV4_RFC1918_B "172.16.0.0/12"
 #define IPV4_RFC1918_C "192.168.0.0/16"
 #define IPV6_MULTICAST "ff00::/8"
 #define IPV6_LINKLOCAL "fe80::/64"
+#define IPV6_LOOPBACK  "::1/128"
+
+#define NO_LOOPBACK      0
+#define LOOPBACK_ALLOWED 1
 
 int is_ipv4_cidr(char* address_str);
 int is_ipv4_single(char* address_str);
@@ -63,3 +69,4 @@ int is_ipv6_host(CIDR *address);
 int is_ipv6_net(CIDR *address);
 int is_ipv6_multicast(CIDR *address);
 int is_ipv6_link_local(CIDR *address);
+int is_valid_intf_address(CIDR *address, char* address_str, int allow_loopback);

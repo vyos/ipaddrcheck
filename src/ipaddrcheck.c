@@ -47,6 +47,8 @@
 #define IS_VALID_INTF_ADDR    220
 #define IS_ANY_CIDR           230
 #define IS_ANY_SINGLE         240
+#define ALLOW_LOOPBACK        250
+#define NO_ACTION             500
 
 static const struct option options[] =
 {
@@ -71,7 +73,7 @@ static const struct option options[] =
     { "is-ipv6-multicast",     no_argument, NULL, 's' },
     { "is-ipv6-link-local",    no_argument, NULL, 't' },
     { "is-valid-intf-address", no_argument, NULL, 'u' },
-    { "legacy",                no_argument, NULL, 'w' },
+    { "allow-loopback",        no_argument, NULL, 'C' },
     { "version",               no_argument, NULL, 'z' },
     { "help",                  no_argument, NULL, '?' },
     { NULL,                    no_argument, NULL, 0   }
@@ -91,6 +93,9 @@ int main(int argc, char* argv[])
     int option_index = 0;      /* Number of the current option for getopt call */
     int optc;                  /* Option character for getopt call */
 
+    int allow_loopback = NO_LOOPBACK;    /* Allow IPv4 loopback in --is-valid-intf-address */
+
+
     /* Parse options, convert to action codes, store in array */
 
     /* Try to allocate memory for the actions array, abort if fail */
@@ -101,7 +106,7 @@ int main(int argc, char* argv[])
         return(EXIT_FAILURE);
     }
 
-    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzAB?", options, &option_index)) != -1 )
+    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABC?", options, &option_index)) != -1 )
     {
          switch(optc)
          {
@@ -168,6 +173,10 @@ int main(int argc, char* argv[])
                  break;
              case 'B':
                  action = IS_ANY_SINGLE;
+                 break;
+             case 'C':
+                 allow_loopback = LOOPBACK_ALLOWED;
+                 action = NO_ACTION;
                  break;
              case '?':
                  print_help();
@@ -272,6 +281,14 @@ int main(int argc, char* argv[])
                  break;
             case IS_ANY_SINGLE:
                  result = is_any_single(address_str);
+                 break;
+            case IS_VALID_INTF_ADDR:
+                 printf("allow_loopback: %d\n", allow_loopback);
+                 result = is_valid_intf_address(address, address_str, allow_loopback);
+                 break;
+            case NO_ACTION:
+                 break;
+            default:
                  break;
         }
         printf("action: %d\n", actions[action_count]);
