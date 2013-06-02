@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
     if( errno == ENOMEM )
     {
         fprintf(stderr, "Error: could not allocate memory!\n");
-        return(EXIT_FAILURE);
+        return(RESULT_INT_ERROR);
     }
 
     while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABC?", options, &option_index)) != -1 )
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
              default:
                 fprintf(stderr, "Error: invalid option\n");
                 print_help(program_name);
-                return(EXIT_FAILURE);
+                return(RESULT_INT_ERROR);
                 break;
          }
 
@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
     {
          fprintf(stderr, "Error: wrong number of arguments, one argument required!\n");
          print_help(program_name);
-         return(EXIT_FAILURE);
+         return(RESULT_INT_ERROR);
     }
 
     CIDR *address;
@@ -218,13 +218,10 @@ int main(int argc, char* argv[])
     if( !( (is_valid_address(address) == RESULT_SUCCESS) &&
         ((is_any_cidr(address_str) == RESULT_SUCCESS) || (is_any_single(address_str) == RESULT_SUCCESS)) ) )
     {
-        printf("cond: %d\n", (is_any_cidr(address_str) != RESULT_SUCCESS) || (is_any_single(address_str) != RESULT_SUCCESS));
-        printf("valid: %d\n", (is_valid_address(address) != RESULT_SUCCESS));
         return(EXIT_FAILURE);
     }
     /* no else needed, the rest is one big else */
 
-    printf("action_count: %d\n", action_count);
     while( (action_count >= 0) && (result == RESULT_SUCCESS) )
     {
         switch(actions[action_count])
@@ -299,7 +296,6 @@ int main(int argc, char* argv[])
             default:
                  break;
         }
-        printf("action: %d\n", actions[action_count]);
         action_count--;
     }
 

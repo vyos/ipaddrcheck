@@ -33,6 +33,7 @@
 
 #define RESULT_SUCCESS 1
 #define RESULT_FAILURE 0
+#define RESULT_INT_ERROR 2
 
 #define IPV4_MULTICAST "224.0.0.0/4"
 #define IPV4_LOOPBACK  "127.0.0.0/8"
