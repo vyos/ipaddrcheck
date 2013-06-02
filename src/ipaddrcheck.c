@@ -80,7 +80,7 @@ static const struct option options[] =
 };
 
 /* Auxillary functions */
-static void print_help(void);
+static void print_help(const char* program_name);
 static void print_version(void);
 
 int main(int argc, char* argv[])
@@ -94,6 +94,8 @@ int main(int argc, char* argv[])
     int optc;                  /* Option character for getopt call */
 
     int allow_loopback = NO_LOOPBACK;    /* Allow IPv4 loopback in --is-valid-intf-address */
+
+    const char* program_name = argv[0]; /* Program name for use in messages */
 
 
     /* Parse options, convert to action codes, store in array */
@@ -179,13 +181,15 @@ int main(int argc, char* argv[])
                  action = NO_ACTION;
                  break;
              case '?':
-                 print_help();
-                 return(0);
+                 print_help(program_name);
+                 return(EXIT_SUCCESS);
              case 'z':
                  print_version();
-                 return(0);
+                 return(EXIT_SUCCESS);
              default:
                 fprintf(stderr, "Error: invalid option\n");
+                print_help(program_name);
+                return(EXIT_FAILURE);
                 break;
          }
 
@@ -201,7 +205,7 @@ int main(int argc, char* argv[])
     else
     {
          fprintf(stderr, "Error: wrong number of arguments, one argument required!\n");
-         print_help();
+         print_help(program_name);
          return(EXIT_FAILURE);
     }
 
@@ -316,33 +320,46 @@ int main(int argc, char* argv[])
 /*
  * Print help, no other side effects
  */
-void print_help(void)
+void print_help(const char* program_name)
 {
-    static const char *message = \
-"--is-valid STR    Check if STR is a valid IPv4 or IPv6 address\n\
-                   or subnet\n\
---is-ipv4 STR Check if STR is a valid IPv4 address with mask \n\
---is-ipv4-cidr STR  Check if STR is a valid CIDR-formatted address \n\
---is-ipv4-single   Check if STR is a valid single address (i.e. with no mask) \n\
---is-ipv4-host  Check if STR is a host address \n\
---is-ipv4-net   Check if STR is a network address \n\
---is-ipv4-broadcast  Check if STR is a broadcast address \n\
---is-ipv4-multicast  Check if STR is a multicast address \n\
---is-ipv4-loopback  Check if STR is a loopback address \n\
---is-ipv4-link-local Check if STR is a link-local address \n\
---is-ipv4-rfc1918 Check if STR is a private (RFC1918) address \n\
---is-ipv6  Check if STR is a valid IPv6 address \n\
---is-ipv6-cidr Check if STR is a CIDR-formatted IPv6 address \n\
---is-ipv6-single Check if STR is an IPv6 address with no mask \n\
---is-ipv6-host Check if STR is an IPv6 host address \n\
---is-ipv6-net Check if STR is an IPv6 network address \n\
---is-ipv6-multicast Check if STR is an IPv6 multicast address \n\
---is-ipv6-link-local Check if STR is an IPv6 link-local address \n\
---is-valid-intf-address Check if STR is an IPv4 or IPv6 address that can be used assigned to a network interface \n\
---version  Print version information and exit \n\
---help Print this message and exit";
-
-    printf("%s", message);
+    printf("Usage: %s <OPTIONS> [STRING]\n", program_name);
+    printf("\
+  --is-valid                 Check if STRING is a valid IPv4 or IPv6 address\n\
+                               or subnet\n\
+  --is-any-cidr              Check if STRING is a valid IPv4 or IPv6 address\n\
+                               with prefix length\n\
+  --is-any-single            Check if STRING is a valid single IPv4 or IPv6 address\n\
+  --is-ipv4                  Check if STRING is a valid IPv4 address with mask \n\
+  --is-ipv4-cidr             Check if STRING is a valid CIDR-formatted address \n\
+  --is-ipv4-single           Check if STRING is a valid single address\n\
+                               (i.e. with no mask)\n\
+  --is-ipv4-host             Check if STRING is a host address \n\
+  --is-ipv4-net              Check if STRING is a network address \n\
+  --is-ipv4-broadcast        Check if STRING is a broadcast address \n\
+  --is-ipv4-multicast        Check if STRING is a multicast address \n\
+  --is-ipv4-loopback         Check if STRING is a loopback address \n\
+  --is-ipv4-link-local       Check if STRING is a link-local address \n\
+  --is-ipv4-rfc1918          Check if STRING is a private (RFC1918) address \n\
+  --is-ipv6                  Check if STRING is a valid IPv6 address \n\
+  --is-ipv6-cidr             Check if STRING is a CIDR-formatted IPv6 address \n\
+  --is-ipv6-single           Check if STRING is an IPv6 address with no mask \n\
+  --is-ipv6-host             Check if STRING is an IPv6 host address \n\
+  --is-ipv6-net              Check if STRING is an IPv6 network address \n\
+  --is-ipv6-multicast        Check if STRING is an IPv6 multicast address \n\
+  --is-ipv6-link-local       Check if STRING is an IPv6 link-local address \n\
+  --is-valid-intf-address    Check if STRING is an IPv4 or IPv6 address that \n\
+                               can be assigned to a network interface \n\
+  --allow-loopback           When used with --is-valid-intf-address,\n\
+                               makes IPv4 loopback addresses pass the check\n\
+  --version                  Print version information and exit \n\
+  --help                     Print this message and exit\n\
+\n\
+Exit codes:\n\
+  0    if check passed,\n\
+  1    if check failed,\n\
+  2    if a problem occured (wrong option, internal error etc.)\n\
+\n\
+See \"man %s\" for details.\n", PACKAGE);
 }
 
 /*
