@@ -209,12 +209,16 @@ int main(int argc, char* argv[])
     address = cidr_from_str(address_str);
     int result = RESULT_SUCCESS;
 
-    /* Check if the address is valid at all,
+    /* Check if the address is valid and well-formatted at all,
        if not there is no point in going further */
-    if( is_valid_address(address) != RESULT_SUCCESS )
+    if( !( (is_valid_address(address) == RESULT_SUCCESS) &&
+        ((is_any_cidr(address_str) == RESULT_SUCCESS) || (is_any_single(address_str) == RESULT_SUCCESS)) ) )
     {
+        printf("cond: %d\n", (is_any_cidr(address_str) != RESULT_SUCCESS) || (is_any_single(address_str) != RESULT_SUCCESS));
+        printf("valid: %d\n", (is_valid_address(address) != RESULT_SUCCESS));
         return(EXIT_FAILURE);
     }
+    /* no else needed, the rest is one big else */
 
     printf("action_count: %d\n", action_count);
     while( (action_count >= 0) && (result == RESULT_SUCCESS) )
