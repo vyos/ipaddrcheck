@@ -43,7 +43,6 @@
 #define IPV6_MULTICAST "ff00::/8"
 #define IPV6_LINKLOCAL "fe80::/64"
 
-int has_mask(char* address_str);
 int is_ipv4_cidr(char* address_str);
 int is_ipv4_single(char* address_str);
 int is_ipv6_cidr(char* address_str);

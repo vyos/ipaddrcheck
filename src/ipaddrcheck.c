@@ -44,13 +44,11 @@
 #define IS_IPV6_UNICAST       180
 #define IS_IPV6_MULTICAST     190
 #define IS_IPV6_LINKLOCAL     200
-#define HAS_MASK              210
 #define IS_VALID_INTF_ADDR    220
 
 static const struct option options[] =
 {
     { "is-valid",              no_argument, NULL, 'a' },
-    { "has-mask",              no_argument, NULL, 'b' },
     { "is-ipv4",               no_argument, NULL, 'c' },
     { "is-ipv4-cidr",          no_argument, NULL, 'd' },
     { "is-ipv4-single",        no_argument, NULL, 'e' },
@@ -107,7 +105,6 @@ int main(int argc, char* argv[])
                  action = IS_VALID;
                  break;
              case 'b':
-                 action = HAS_MASK;
                  break;
              case 'c':
                  action = IS_IPV4;
@@ -207,9 +204,6 @@ int main(int argc, char* argv[])
         {
             case IS_VALID:
                 result = is_valid_address(address);
-                break;
-            case HAS_MASK:
-                result = has_mask(address_str);
                 break;
             case IS_IPV4:
                 result = is_ipv4(address);

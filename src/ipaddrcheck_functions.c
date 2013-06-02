@@ -37,24 +37,6 @@
  * the format was.
  */
 
-/* Does it have mask? */
-int has_mask(char* address_str)
-{
-    int result;
-    char *hasslash = strchr(address_str, '/');
-
-    if( hasslash != NULL )
-    {
-        result = RESULT_SUCCESS;
-    }
-    else
-    {
-        result = RESULT_FAILURE;
-    }
-
-    return(result);
-}
-
 /* Does it look like IPv4 CIDR (e.g. 192.0.2.1/24)? */
 int is_ipv4_cidr(char* address_str)
 {
