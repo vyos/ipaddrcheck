@@ -321,7 +321,7 @@ void print_help(const char* program_name)
     printf("Usage: %s <OPTIONS> [STRING]\n", program_name);
     printf("\
   --is-valid                 Check if STRING is a valid IPv4 or IPv6 address\n\
-                               or subnet\n\
+                               with or without prefix length\n\
   --is-any-cidr              Check if STRING is a valid IPv4 or IPv6 address\n\
                                with prefix length\n\
   --is-any-single            Check if STRING is a valid single IPv4 or IPv6 address\n\
