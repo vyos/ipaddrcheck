@@ -455,6 +455,7 @@ int is_valid_intf_address(CIDR *address, char* address_str, int allow_loopback)
         (cidr_equals(address, cidr_from_str(IPV6_LOOPBACK)) != 0) &&
         (cidr_equals(address, cidr_from_str(IPV4_UNSPECIFIED)) != 0) &&
         (cidr_contains(cidr_from_str(IPV4_THIS), address) != 0) &&
+        (cidr_equals(address, cidr_from_str(IPV4_LIMITED_BROADCAST)) != 0) &&
         (is_any_cidr(address_str) == RESULT_SUCCESS) )
     {
         result = RESULT_SUCCESS;
