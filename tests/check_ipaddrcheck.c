@@ -22,19 +22,6 @@
 #include <check.h>
 #include "../src/ipaddrcheck_functions.h"
 
-START_TEST (test_has_mask)
-{
-    char* good_address_str_cidr = "192.0.2.1/25";
-    ck_assert_int_eq(has_mask(good_address_str_cidr), RESULT_SUCCESS);
-
-    char* good_address_str_decimal = "192.0.2.1/255.255.0.0";
-    ck_assert_int_eq(has_mask(good_address_str_decimal), RESULT_SUCCESS);
-
-    char* bad_address_str = "192.0.2.1";
-    ck_assert_int_eq(has_mask(bad_address_str), RESULT_FAILURE);
-}
-END_TEST
-
 START_TEST (test_is_valid_address)
 {
     char* good_v4_address_str = "192.0.2.1";
