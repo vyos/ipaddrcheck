@@ -132,7 +132,7 @@ for address in \
     ${ipv6_cidr_postitive[0]} \
     $string
 do
-    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+    assert_raises "$IPADDRCHECK --is-any-single $address" 1
 done
 
 
@@ -141,7 +141,7 @@ for address in \
     ${ipv4_single_positive[*]} \
     ${ipv4_cidr_positive[*]} 
 do
-    assert_raises "$IPADDRCHECK --is-any-cidr $address" 0
+    assert_raises "$IPADDRCHECK --is-ipv4 $address" 0
 done
 
 for address in \
@@ -151,14 +151,14 @@ for address in \
     ${ipv6_cidr_positive[0]} \
     $string
 do
-    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+    assert_raises "$IPADDRCHECK --is-ipv4 $address" 1
 done
 
 # --is-ipv4-cidr
 for address in \
     ${ipv4_cidr_positive[*]} 
 do
-    assert_raises "$IPADDRCHECK --is-any-cidr $address" 0
+    assert_raises "$IPADDRCHECK --is-ipv4-cidr $address" 0
 done
 
 for address in \
@@ -168,14 +168,14 @@ for address in \
     ${ipv6_cidr_positive[0]} \
     $string
 do
-    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+    assert_raises "$IPADDRCHECK --is-ipv4-cidr $address" 1
 done
 
 # --is-ipv4-single
 for address in \
     ${ipv4_single_positive[*]} 
 do
-    assert_raises "$IPADDRCHECK --is-any-cidr $address" 0
+    assert_raises "$IPADDRCHECK --is-ipv4-single $address" 0
 done
 
 for address in \
@@ -185,7 +185,7 @@ for address in \
     ${ipv6_cidr_positive[0]} \
     $string
 do
-    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+    assert_raises "$IPADDRCHECK --is-ipv4-single $address" 1
 done
 
 # --is-ipv4-host
