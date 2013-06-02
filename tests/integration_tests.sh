@@ -23,14 +23,185 @@
 
 IPADDRCHECK=ipaddrcheck
 
+# test data
+ipv4_single_positive=(
+    192.0.2.1
+    192.0.2.0
+    0.0.0.0
+    0.0.0.1
+    255.255.255.255
+)
+
+ipv4_single_negative=(
+    192.0.2.666
+    500.0.2.1
+)
+
+ipv4_cidr_positive=(
+    192.0.2.1/0
+    192.0.2.1/32
+    192.0.2.1/24
+    192.0.2.0/26
+)
+
+ipv4_cidr_negative=(
+    192.0.2.1/33
+    192.0.2.666/32
+)
+
+ipv6_single_positive=(
+    2001:0db8:0000:0000:0000:ff00:0042:8329
+    2001:db8:0:0:0:ff00:42:8329
+    2001:db8::1
+    ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+    0000::
+    ::1
+    ::
+)
+
+ipv6_single_negative=(
+    gggg::ffff
+)
+
+ipv6_cidr_positive=(
+    2001:db8::/0
+    2001:db8::/128
+    2001:db8::/56
+    ::/0
+)
+
+ipv6_cidr_negative=(
+    2001:db8::/129
+)
+
+string="garbage"
+
 # begin ipaddrcheck_integration
 
-assert_raises "$IPADDRCHECK --is-valid 192.0.2.1"      0
-assert_raises "$IPADDRCHECK --is-valid 192.0.2.1/24"   0
-assert_raises "$IPADDRCHECK --is-valid 192.0.2.0/26"   0
-assert_raises "$IPADDRCHECK --is-valid 2001:db8::1"    0
-assert_raises "$IPADDRCHECK --is-valid 2001:db8::/56"  0
-assert_raises "$IPADDRCHECK --is-valid 192.0.2.666"    1
-assert_raises "$IPADDRCHECK --is-valid garbage"        1
+# --is-valid
+for address in \
+    ${ipv4_single_positive[*]} \
+    ${ipv4_cidr_positive[*]} \
+    ${ipv6_single_positive[*]} \
+    ${ipv6_cidr_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-valid $address" 0
+done
+
+for address in \
+    ${ipv4_single_negative[*]} \
+    ${ipv4_cidr_negative[*]} \
+    ${ipv6_single_negative[*]} \
+    ${ipv6_cidr_negative[*]} \
+    $string
+do
+    assert_raises "$IPADDRCHECK --is-valid $address" 1
+done
+
+# --is-any-cidr
+for address in \
+    ${ipv4_cidr_positive[*]} \
+    ${ipv6_cidr_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 0
+done
+
+for address in \
+    ${ipv4_single_positive[0]} \
+    ${ipv4_cidr_negative[*]} \
+    ${ipv6_single_positive[0]} \
+    ${ipv6_cidr_negative[*]} \
+    $string
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+done
+
+
+# --is-any-single
+for address in \
+    ${ipv4_single_positive[*]} \
+    ${ipv6_single_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-any-single $address" 0
+done
+
+for address in \
+    ${ipv4_single_negative[*]} \
+    ${ipv4_cidr_postive[0]} \
+    ${ipv6_single_negative[*]} \
+    ${ipv6_cidr_postitive[0]} \
+    $string
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+done
+
+
+# --is-ipv4
+for address in \
+    ${ipv4_single_positive[*]} \
+    ${ipv4_cidr_positive[*]} 
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 0
+done
+
+for address in \
+    ${ipv4_single_negative[*]} \
+    ${ipv4_cidr_negative[*]} \
+    ${ipv6_single_positive[0]} \
+    ${ipv6_cidr_positive[0]} \
+    $string
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+done
+
+# --is-ipv4-cidr
+for address in \
+    ${ipv4_cidr_positive[*]} 
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 0
+done
+
+for address in \
+    ${ipv4_single_positive[0]} \
+    ${ipv4_cidr_negative[*]} \
+    ${ipv6_single_positive[0]} \
+    ${ipv6_cidr_positive[0]} \
+    $string
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+done
+
+# --is-ipv4-single
+for address in \
+    ${ipv4_single_positive[*]} 
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 0
+done
+
+for address in \
+    ${ipv4_single_negative[*]} \
+    ${ipv4_cidr_postive[0]} \
+    ${ipv6_single_positive[0]} \
+    ${ipv6_cidr_positive[0]} \
+    $string
+do
+    assert_raises "$IPADDRCHECK --is-any-cidr $address" 1
+done
+
+# --is-ipv4-host
+# --is-ipv4-net
+# --is-ipv4-broadcast
+# --is-ipv4-multicast
+# --is-ipv4-loopback
+# --is-ipv4-link-local
+# --is-ipv4-rfc1918
+# --is-ipv6
+# --is-ipv6-cidr
+# --is-ipv6-single
+# --is-ipv6-host
+# --is-ipv6-net
+# --is-ipv6-multicast
+# --is-ipv6-link-local
+# --is-valid-intf-address
 
 assert_end ipaddrcheck_integration
