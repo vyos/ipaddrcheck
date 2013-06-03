@@ -342,7 +342,6 @@ int main(int argc, char* argv[])
                  result = is_any_single(address_str);
                  break;
             case IS_VALID_INTF_ADDR:
-                 printf("allow_loopback: %d\n", allow_loopback);
                  result = is_valid_intf_address(address, address_str, allow_loopback);
                  break;
             case NO_ACTION:
