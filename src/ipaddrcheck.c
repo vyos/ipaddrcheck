@@ -249,14 +249,40 @@ int main(int argc, char* argv[])
                 result = is_ipv4_single(address_str);
                 break;
             case IS_IPV4_HOST:
-                result = is_ipv4_host(address);
+                /* Host vs. network address check only makes sense
+                   if prefix length is given */
+                if( !is_ipv4_cidr(address_str) )
+                {
+                    result = RESULT_FAILURE;
+                }
+                else
+                {
+                    result = is_ipv4_host(address);
+                }
                 break;
             case IS_IPV4_NET:
-                /* XXX: Should we fail this check for single addresses? */
-                result = is_ipv4_net(address);
+                /* Host vs. network address check only makes sense
+                   if prefix length is given */
+                if( !is_ipv4_cidr(address_str) )
+                {
+                    result = RESULT_FAILURE;
+                }
+                else
+                {
+                    result = is_ipv4_net(address);
+                }
                 break;
             case IS_IPV4_BROADCAST:
-                result = is_ipv4_broadcast(address);
+                /* Broadcast address check only makes sense
+                   if prefix length is given */
+                if( !is_ipv4_cidr(address_str) )
+                {
+                    result = RESULT_FAILURE;
+                }
+                else
+                {
+                    result = is_ipv4_broadcast(address);
+                }
                 break;
             case IS_IPV4_MULTICAST:
                 result = is_ipv4_multicast(address);
@@ -280,10 +306,28 @@ int main(int argc, char* argv[])
                 result = is_ipv6_single(address_str);
                 break;
             case IS_IPV6_HOST:
-                result = is_ipv6_host(address);
+                /* Host vs. network address check only makes sense
+                   if prefix length is given */
+                if( !is_ipv6_cidr(address_str) )
+                {
+                    result = RESULT_FAILURE;
+                }
+                else
+                {
+                    result = is_ipv6_host(address);
+                }
                 break;
             case IS_IPV6_NET:
-                result = is_ipv6_net(address);
+                /* Host vs. network address check only makes sense
+                   if prefix length is given */
+                if( !is_ipv6_cidr(address_str) )
+                {
+                    result = RESULT_FAILURE;
+                }
+                else
+                {
+                    result = is_ipv6_net(address);
+                }
                 break;
             case IS_IPV6_MULTICAST:
                  result = is_ipv6_multicast(address);
@@ -304,6 +348,8 @@ int main(int argc, char* argv[])
             case NO_ACTION:
                  break;
             case IS_ANY_HOST:
+                /* Host vs. network address check only makes sense
+                   if prefix length is given */
                  if( !is_any_cidr(address_str) )
                  {
                      result = RESULT_FAILURE;
@@ -314,6 +360,8 @@ int main(int argc, char* argv[])
                  }
                  break;
             case IS_ANY_NET:
+                /* Host vs. network address check only makes sense
+                   if prefix length is given */
                  if( !is_any_cidr(address_str) )
                  {
                      result = RESULT_FAILURE;
