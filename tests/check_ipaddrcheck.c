@@ -353,8 +353,54 @@ START_TEST (test_is_valid_intf_address)
     CIDR* good_address_v6 = cidr_from_str(good_address_str_v6);
     ck_assert_int_eq(is_valid_intf_address(good_address_v6, good_address_str_v6, NO_LOOPBACK), RESULT_SUCCESS);
     cidr_free(good_address_v6);
+}
+END_TEST
 
+START_TEST (test_is_any_host)
+{
+    char* good_address_str_v4 = "192.0.2.1/25";
+    CIDR* good_address_v4 = cidr_from_str(good_address_str_v4);
+    ck_assert_int_eq(is_any_host(good_address_v4), RESULT_SUCCESS);
+    cidr_free(good_address_v4);
 
+    char* good_address_str_v6 = "2001:db8:aff::1/64";
+    CIDR* good_address_v6 = cidr_from_str(good_address_str_v6);
+    ck_assert_int_eq(is_any_host(good_address_v6), RESULT_SUCCESS);
+    cidr_free(good_address_v6);
+
+    char* bad_address_str_v4 = "192.0.2.0/24";
+    CIDR* bad_address_v4 = cidr_from_str(bad_address_str_v4);
+    ck_assert_int_eq(is_any_host(bad_address_v4), RESULT_FAILURE);
+    cidr_free(bad_address_v4);
+
+    char* bad_address_str_v6 = "2001:db8::/32";
+    CIDR* bad_address_v6 = cidr_from_str(bad_address_str_v6);
+    ck_assert_int_eq(is_any_host(bad_address_v6), RESULT_FAILURE);
+    cidr_free(bad_address_v6);
+}
+END_TEST
+
+START_TEST (test_is_any_net)
+{
+    char* good_address_str_v4 = "192.0.2.0/25";
+    CIDR* good_address_v4 = cidr_from_str(good_address_str_v4);
+    ck_assert_int_eq(is_any_net(good_address_v4), RESULT_SUCCESS);
+    cidr_free(good_address_v4);
+
+    char* good_address_str_v6 = "2001:db8:aff::/64";
+    CIDR* good_address_v6 = cidr_from_str(good_address_str_v6);
+    ck_assert_int_eq(is_any_net(good_address_v6), RESULT_SUCCESS);
+    cidr_free(good_address_v6);
+
+    char* bad_address_str_v4 = "192.0.2.33/24";
+    CIDR* bad_address_v4 = cidr_from_str(bad_address_str_v4);
+    ck_assert_int_eq(is_any_net(bad_address_v4), RESULT_FAILURE);
+    cidr_free(bad_address_v4);
+
+    char* bad_address_str_v6 = "2001:db8::1/32";
+    CIDR* bad_address_v6 = cidr_from_str(bad_address_str_v6);
+    ck_assert_int_eq(is_any_net(bad_address_v6), RESULT_FAILURE);
+    cidr_free(bad_address_v6);
 }
 END_TEST
 
@@ -386,6 +432,8 @@ Suite *ipaddrcheck_suite(void)
     tcase_add_test(tc_core, test_is_ipv6_multicast);
     tcase_add_test(tc_core, test_is_ipv6_link_local);
     tcase_add_test(tc_core, test_is_valid_intf_address);
+    tcase_add_test(tc_core, test_is_any_host);
+    tcase_add_test(tc_core, test_is_any_net);
 
     suite_add_tcase(s, tc_core);
 
