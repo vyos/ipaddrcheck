@@ -74,6 +74,8 @@ static const struct option options[] =
     { "is-ipv6-link-local",    no_argument, NULL, 't' },
     { "is-valid-intf-address", no_argument, NULL, 'u' },
     { "allow-loopback",        no_argument, NULL, 'C' },
+    { "is-any-host",           no_argument, NULL, 'D' },
+    { "is-any-net",            no_argument, NULL, 'E' },
     { "version",               no_argument, NULL, 'z' },
     { "help",                  no_argument, NULL, '?' },
     { NULL,                    no_argument, NULL, 0   }
@@ -108,7 +110,7 @@ int main(int argc, char* argv[])
         return(RESULT_INT_ERROR);
     }
 
-    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABC?", options, &option_index)) != -1 )
+    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABCDE?", options, &option_index)) != -1 )
     {
          switch(optc)
          {
@@ -320,6 +322,7 @@ void print_help(const char* program_name)
 {
     printf("Usage: %s <OPTIONS> [STRING]\n", program_name);
     printf("\
+Options:\n\
   --is-valid                 Check if STRING is a valid IPv4 or IPv6 address\n\
                                with or without prefix length\n\
   --is-any-cidr              Check if STRING is a valid IPv4 or IPv6 address\n\
@@ -348,14 +351,12 @@ void print_help(const char* program_name)
   --allow-loopback           When used with --is-valid-intf-address,\n\
                                makes IPv4 loopback addresses pass the check\n\
   --version                  Print version information and exit \n\
-  --help                     Print this message and exit\n\
+  --help                     Print help message and exit\n\
 \n\
 Exit codes:\n\
   0    if check passed,\n\
   1    if check failed,\n\
-  2    if a problem occured (wrong option, internal error etc.)\n\
-\n\
-See \"man %s\" for details.\n", PACKAGE);
+  2    if a problem occured (wrong option, internal error etc.)\n");
 }
 
 /*
@@ -363,7 +364,7 @@ See \"man %s\" for details.\n", PACKAGE);
  */
 void print_version(void)
 {
-    printf("%s %s\n", PACKAGE_NAME, PACKAGE_VERSION);
+    printf("%s %s\n\n", PACKAGE_NAME, PACKAGE_VERSION);
     printf("Copyright (C) SO3Group 2013.\n\
 License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software: you are free to change and redistribute it.\n\
