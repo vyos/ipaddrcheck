@@ -188,6 +188,8 @@ do
     assert_raises "$IPADDRCHECK --is-ipv4-single $address" 1
 done
 
+# --is-any-host
+# --is-any-net
 # --is-ipv4-host
 # --is-ipv4-net
 # --is-ipv4-broadcast
