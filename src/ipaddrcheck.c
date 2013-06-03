@@ -99,6 +99,9 @@ int main(int argc, char* argv[])
 
     int allow_loopback = NO_LOOPBACK;    /* Allow IPv4 loopback in --is-valid-intf-address */
 
+    int no_action = 0;   /* Indicates the option modifies program behaviour
+                            but doesn't have its own action */
+
     const char* program_name = argv[0]; /* Program name for use in messages */
 
 
@@ -182,7 +185,7 @@ int main(int argc, char* argv[])
                  break;
              case 'C':
                  allow_loopback = LOOPBACK_ALLOWED;
-                 action = NO_ACTION;
+                 no_action = NO_ACTION;
                  break;
              case 'D':
                  action = IS_ANY_HOST;
@@ -203,8 +206,23 @@ int main(int argc, char* argv[])
                 break;
          }
 
-         action_count = optind-2;
-         actions[action_count] = action;
+         if( no_action != NO_ACTION )
+         {
+             action_count = optind-2;
+             actions[action_count] = action;
+         }
+         else
+         {
+             no_action = 0; /* Reset no_action */
+         }
+    }
+
+    /* Exit if no option given */
+    if( optind < 2 )
+    {
+        fprintf(stderr, "Error: at least one option expected!\n");
+        print_help(program_name);
+        return(RESULT_INT_ERROR);
     }
 
     /* Get non-option arguments */
