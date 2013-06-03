@@ -48,6 +48,8 @@
 #define IS_ANY_CIDR           230
 #define IS_ANY_SINGLE         240
 #define ALLOW_LOOPBACK        250
+#define IS_ANY_HOST           260
+#define IS_ANY_NET            270
 #define NO_ACTION             500
 
 static const struct option options[] =
@@ -182,6 +184,12 @@ int main(int argc, char* argv[])
                  allow_loopback = LOOPBACK_ALLOWED;
                  action = NO_ACTION;
                  break;
+             case 'D':
+                 action = IS_ANY_HOST;
+                 break;
+             case 'E':
+                 action = IS_ANY_NET;
+                 break;
              case '?':
                  print_help(program_name);
                  return(EXIT_SUCCESS);
@@ -295,6 +303,26 @@ int main(int argc, char* argv[])
                  break;
             case NO_ACTION:
                  break;
+            case IS_ANY_HOST:
+                 if( !is_any_cidr(address_str) )
+                 {
+                     result = RESULT_FAILURE;
+                 }
+                 else
+                 {
+                     result = is_any_host(address);
+                 }
+                 break;
+            case IS_ANY_NET:
+                 if( !is_any_cidr(address_str) )
+                 {
+                     result = RESULT_FAILURE;
+                 }
+                 else
+                 {
+                     result = is_any_net(address);
+                 }
+                 break;
             default:
                  break;
         }
@@ -328,6 +356,8 @@ Options:\n\
   --is-any-cidr              Check if STRING is a valid IPv4 or IPv6 address\n\
                                with prefix length\n\
   --is-any-single            Check if STRING is a valid single IPv4 or IPv6 address\n\
+  --is-any-host              Check if STRING is a valid IPv4 or IPv6 host address\n\
+  --is-any-net               Check if STRING is a valid IPv4 or IPv6 network address\n\
   --is-ipv4                  Check if STRING is a valid IPv4 address with mask \n\
   --is-ipv4-cidr             Check if STRING is a valid CIDR-formatted address \n\
   --is-ipv4-single           Check if STRING is a valid single address\n\

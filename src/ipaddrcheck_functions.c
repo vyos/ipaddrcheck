@@ -467,3 +467,41 @@ int is_valid_intf_address(CIDR *address, char* address_str, int allow_loopback)
 
     return(result);
 }
+
+/* Is it an IPv4 or IPv6 host address? */
+int is_any_host(CIDR *address)
+{
+    int result;
+
+    if( (is_ipv4_host(address) == RESULT_SUCCESS) ||
+        (is_ipv6_host(address) == RESULT_SUCCESS) )
+    {
+        result = RESULT_SUCCESS;
+    }
+    else
+    {
+        result = RESULT_FAILURE;
+    }
+
+    return(result);
+}
+
+/* Is it an IPv4 or IPv6 network address? */
+int is_any_net(CIDR *address)
+{
+    int result;
+
+    if( (is_ipv4_net(address) == RESULT_SUCCESS) ||
+        (is_ipv6_net(address) == RESULT_SUCCESS) )
+    {
+        result = RESULT_SUCCESS;
+    }
+    else
+    {
+        result = RESULT_FAILURE;
+    }
+
+    return(result);
+}
+
+
