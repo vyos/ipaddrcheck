@@ -138,6 +138,7 @@ int main(int argc, char* argv[])
                  break;
              case 'g':
                  action = IS_IPV4_NET;
+                 break;
              case 'h':
                  action = IS_IPV4_BROADCAST;
                  break;
@@ -203,7 +204,6 @@ int main(int argc, char* argv[])
                 fprintf(stderr, "Error: invalid option\n");
                 print_help(program_name);
                 return(RESULT_INT_ERROR);
-                break;
          }
 
          if( no_action != NO_ACTION )
