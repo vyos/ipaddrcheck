@@ -21,6 +21,8 @@
  *
  */
 
+#ifndef IPADDRCHECK_FUNCTIONS_H
+#define IPADDRCHECK_FUNCTIONS_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,3 +76,5 @@ int is_ipv6_link_local(CIDR *address);
 int is_valid_intf_address(CIDR *address, char* address_str, int allow_loopback);
 int is_any_host(CIDR *address);
 int is_any_net(CIDR *address);
+
+#endif /* IPADDRCHECK_FUNCTIONS_H */
