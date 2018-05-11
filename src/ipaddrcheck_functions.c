@@ -1,9 +1,8 @@
 /*
  * ipaddrcheck_functions.c: IPv4/IPv6 validation functions for ipaddrcheck
  *
- * Maintainer: Daniil Baturin <daniil at baturin dot org>
- *
- * Copyright (C) 2013 SO3Group
+ * Copyright (C) 2013 Daniil Baturin
+ * Copyright (C) 2018 VyOS maintainers and contributors
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

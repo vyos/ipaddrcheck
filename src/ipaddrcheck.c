@@ -1,12 +1,11 @@
 /*
  * ipaddrcheck.c: an IPv4/IPv6 validator
  *
- * Maintainer: Daniil Baturin <daniil at baturin dot org>
- *
- * Copyright (C) 2013 SO3Group
+ * Copyright (C) 2013 Daniil Baturin
+ * Copyright (C) 2018 VyOS maintainers and contributors
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
+ * it under the terms of the GNU General Public License version 2 or later as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
@@ -83,7 +82,7 @@ static const struct option options[] =
     { NULL,                    no_argument, NULL, 0   }
 };
 
-/* Auxillary functions */
+/* Auxiliary functions */
 static void print_help(const char* program_name);
 static void print_version(void);
 
@@ -460,7 +459,7 @@ Exit codes:\n\
 void print_version(void)
 {
     printf("%s %s\n\n", PACKAGE_NAME, PACKAGE_VERSION);
-    printf("Copyright (C) SO3Group 2013.\n\
+    printf("Copyright (C) VyOS maintainers and contributors 2018.\n\
 License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software: you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n");

@@ -3,7 +3,7 @@ ipaddrcheck
 
 An IPv4 and IPv6 validation utility for use in scripts
 
-Depends on libcidr by Matthew Fuller: http://www.over-yonder.net/~fullermd/projects/libcidr
+Depends on libcidr by Matthew Fuller (http://www.over-yonder.net/~fullermd/projects/libcidr) and libpcre.
 
     Usage: ./ipaddrcheck <OPTIONS> [STRING]
     Options:
