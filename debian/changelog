@@ -1,0 +1,5 @@
+ipaddrcheck (1.0) unstable; urgency=medium
+
+  * Initial import and debian packaging
+
+ -- Daniil Baturin <daniil@baturin.org>  Sat, 12 May 2018 00:17:05 +0200
