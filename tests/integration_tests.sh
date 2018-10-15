@@ -60,6 +60,7 @@ ipv6_single_positive=(
 
 ipv6_single_negative=(
     gggg::ffff
+    2001::db8::1
 )
 
 ipv6_cidr_positive=(
@@ -71,6 +72,7 @@ ipv6_cidr_positive=(
 
 ipv6_cidr_negative=(
     2001:db8::/129
+    2001::db8::/129
 )
 
 string="garbage"

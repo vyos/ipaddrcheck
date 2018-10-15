@@ -100,10 +100,24 @@ int is_ipv6_cidr(char* address_str)
     int rc;
     const char *error;
     int erroffset;
+    char *host;
+    char *mask;
+    char *temp_str = calloc(strlen(address_str)+1, sizeof(char));
 
-    re = pcre_compile("^((([0-9a-fA-F\\:])+)(\\/\\d{1,3}))$",
+    strcpy(temp_str, address_str);    
+
+    host = strtok(temp_str, "/");
+    mask = strtok(NULL, "/");
+
+    if( mask == NULL)
+	return RESULT_FAILURE;
+    
+    if ( atoi(mask) < 0 || atoi(mask) > 128)
+	return RESULT_FAILURE;
+
+    re = pcre_compile("^((?:(?:(?:[A-Fa-f0-9]{1,4}:){6}|(?=(?:[A-Fa-f0-9]{0,4}:){0,6}(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$)(([0-9a-fA-F]{1,4}:){0,5}|:)((:[0-9a-fA-F]{1,4}){1,5}:|:)|::(?:[A-Fa-f0-9]{1,4}:){5})(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}|(?=(?:[A-Fa-f0-9]{0,4}:){0,7}[A-Fa-f0-9]{0,4}$)(([0-9a-fA-F]{1,4}:){1,7}|:)((:[0-9a-fA-F]{1,4}){1,7}|:)|(?:[A-Fa-f0-9]{1,4}:){7}:|:(:[A-Fa-f0-9]{1,4}){7}))$",
                       0, &error, &erroffset, NULL);
-    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
+    rc = pcre_exec(re, NULL, host, strlen(host), 0, 0, offsets, 1);
 
     if( rc < 0 )
     {
@@ -128,7 +142,7 @@ int is_ipv6_single(char* address_str)
     const char *error;
     int erroffset;
 
-    re = pcre_compile("^(([0-9a-fA-F\\:])+)$",
+    re = pcre_compile("^(?:(?:(?:[A-Fa-f0-9]{1,4}:){6}|(?=(?:[A-Fa-f0-9]{0,4}:){0,6}(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$)(([0-9a-fA-F]{1,4}:){0,5}|:)((:[0-9a-fA-F]{1,4}){1,5}:|:)|::(?:[A-Fa-f0-9]{1,4}:){5})(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}|(?=(?:[A-Fa-f0-9]{0,4}:){0,7}[A-Fa-f0-9]{0,4}$)(([0-9a-fA-F]{1,4}:){1,7}|:)((:[0-9a-fA-F]{1,4}){1,7}|:)|(?:[A-Fa-f0-9]{1,4}:){7}:|:(:[A-Fa-f0-9]{1,4}){7})$",
                       0, &error, &erroffset, NULL);
     rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
 
