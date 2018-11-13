@@ -1,3 +1,9 @@
+ipaddrcheck (1.1) unstable; urgency=medium
+
+  * Add a --verbose option and diagnostic messages for common mistakes
+
+ -- Daniil Baturin <daniil@baturin.org>  Tue, 13 Nov 2018 19:51:04 +0100
+
 ipaddrcheck (1.0) unstable; urgency=medium
 
   * Initial import and debian packaging
