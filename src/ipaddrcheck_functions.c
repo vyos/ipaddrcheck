@@ -36,6 +36,28 @@
  * the format was.
  */
 
+
+/* Does it contain double semicolons? This is not allowed in IPv6 addresses */
+int duplicate_double_semicolons(char* address_str) {
+    int offsets[1];
+    pcre *re;
+    int rc;
+    const char *error;
+    int erroffset;
+
+    re = pcre_compile(".*(::).*\\1", 0, &error, &erroffset, NULL);
+    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
+
+    if( rc >= 0)
+    {
+        return(1);
+    }
+    else
+    {
+        return(0);
+    }
+}
+
 /* Does it look like IPv4 CIDR (e.g. 192.0.2.1/24)? */
 int is_ipv4_cidr(char* address_str)
 {

@@ -52,6 +52,7 @@
 #define NO_LOOPBACK      0
 #define LOOPBACK_ALLOWED 1
 
+int duplicate_double_semicolons(char* address_str);
 int is_ipv4_cidr(char* address_str);
 int is_ipv4_single(char* address_str);
 int is_ipv6_cidr(char* address_str);
