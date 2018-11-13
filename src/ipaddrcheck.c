@@ -79,6 +79,7 @@ static const struct option options[] =
     { "is-any-net",            no_argument, NULL, 'E' },
     { "version",               no_argument, NULL, 'z' },
     { "help",                  no_argument, NULL, '?' },
+    { "verbose",               no_argument, NULL, 'V' },
     { NULL,                    no_argument, NULL, 0   }
 };
 
@@ -101,6 +102,8 @@ int main(int argc, char* argv[])
     int no_action = 0;   /* Indicates the option modifies program behaviour
                             but doesn't have its own action */
 
+    int verbose = 0;
+
     const char* program_name = argv[0]; /* Program name for use in messages */
 
 
@@ -114,7 +117,7 @@ int main(int argc, char* argv[])
         return(RESULT_INT_ERROR);
     }
 
-    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABCDE?", options, &option_index)) != -1 )
+    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABCDEV?", options, &option_index)) != -1 )
     {
          switch(optc)
          {
@@ -193,6 +196,9 @@ int main(int argc, char* argv[])
              case 'E':
                  action = IS_ANY_NET;
                  break;
+             case 'V':
+                 verbose = 1;
+                 break;
              case '?':
                  print_help(program_name);
                  return(EXIT_SUCCESS);
@@ -245,6 +251,9 @@ int main(int argc, char* argv[])
     if( !( (is_valid_address(address) == RESULT_SUCCESS) &&
         ((is_any_cidr(address_str) == RESULT_SUCCESS) || (is_any_single(address_str) == RESULT_SUCCESS)) ) )
     {
+        if( verbose ) {
+            printf("Malformed address %s\n", address_str);
+        }
         return(EXIT_FAILURE);
     }
     /* no else needed, the rest is one big else */
@@ -268,25 +277,58 @@ int main(int argc, char* argv[])
             case IS_IPV4_HOST:
                 /* Host vs. network address check only makes sense
                    if prefix length is given */
+                if( !(cidr_get_proto(address) == CIDR_IPV4) ) {
+                    if( verbose ) {
+                        printf("%s is not a valid IPv4 address\n", address_str);
+                    }
+                    result = RESULT_FAILURE;
+                    break;
+                }
+
                 if( !is_ipv4_cidr(address_str) )
                 {
+                    if( verbose ) {
+                        printf("Cannot check if %s is a valid host address: missing prefix length\n", address_str);
+                    }
                     result = RESULT_FAILURE;
                 }
                 else
                 {
                     result = is_ipv4_host(address);
+                    if( (result == RESULT_FAILURE) && verbose ) {
+                        if( ((cidr_equals(address, cidr_addr_network(address)) >= 0) && (cidr_get_pflen(address) != 32)) ) {
+                            printf("%s is an IPv4 network address, not a host address\n", address_str);
+                        }
+                    }
                 }
                 break;
             case IS_IPV4_NET:
                 /* Host vs. network address check only makes sense
                    if prefix length is given */
+                if( !(cidr_get_proto(address) == CIDR_IPV4) ) {
+                    if( verbose ) {
+                        printf("%s is not a valid IPv4 address\n", address_str);
+                    }
+                    result = RESULT_FAILURE;
+                    break;
+                }
+
                 if( !is_ipv4_cidr(address_str) )
                 {
+                    if( verbose ) {
+                        printf("Cannot check if %s is a valid network address: missing prefix length\n", address_str);
+                    }
                     result = RESULT_FAILURE;
                 }
                 else
                 {
                     result = is_ipv4_net(address);
+                    if( (result == RESULT_FAILURE) && verbose ) {
+                        if( ((cidr_equals(address, cidr_addr_network(address)) < 0) && (cidr_get_pflen(address) != 32)) ) {
+                            char* network_addr = cidr_to_str(cidr_addr_network(address), 0);
+                            printf("%s is an IPv4 host address, not a network address. Did you mean %s?\n", address_str, network_addr);
+                        }
+                    }
                 }
                 break;
             case IS_IPV4_BROADCAST:
@@ -294,6 +336,9 @@ int main(int argc, char* argv[])
                    if prefix length is given */
                 if( !is_ipv4_cidr(address_str) )
                 {
+                    if( verbose ) {
+                        printf("Cannot check if %s is a broadcast address: missing prefix length\n", address_str);
+                    }
                     result = RESULT_FAILURE;
                 }
                 else
@@ -325,25 +370,58 @@ int main(int argc, char* argv[])
             case IS_IPV6_HOST:
                 /* Host vs. network address check only makes sense
                    if prefix length is given */
+                if( !(cidr_get_proto(address) == CIDR_IPV6) ) {
+                    if( verbose ) {
+                        printf("%s is not a valid IPv6 address\n", address_str);
+                    }
+                    result = RESULT_FAILURE;
+                    break;
+                }
+
                 if( !is_ipv6_cidr(address_str) )
                 {
+                    if( verbose ) {
+                        printf("Cannot check if %s is a valid IPv6 host address: missing prefix length\n", address_str);
+                    }
                     result = RESULT_FAILURE;
                 }
                 else
                 {
                     result = is_ipv6_host(address);
+                    if( (result == RESULT_FAILURE) && verbose ) {
+                        if( ((cidr_equals(address, cidr_addr_network(address)) >= 0) && (cidr_get_pflen(address) != 128)) ) {
+                            printf("%s is an IPv6 network address, not a host address\n", address_str);
+                        }
+                    }
                 }
                 break;
             case IS_IPV6_NET:
                 /* Host vs. network address check only makes sense
                    if prefix length is given */
+                if( !(cidr_get_proto(address) == CIDR_IPV6) ) {
+                    if( verbose ) {
+                        printf("%s is not a valid IPv6 address\n", address_str);
+                    }
+                    result = RESULT_FAILURE;
+                    break;
+                }
+
                 if( !is_ipv6_cidr(address_str) )
                 {
+                    if( verbose ) {
+                        printf("Cannot check if %s is a valid IPv6 network address: missing prefix length\n", address_str);
+                    }
                     result = RESULT_FAILURE;
                 }
                 else
                 {
                     result = is_ipv6_net(address);
+                    if( (result == RESULT_FAILURE) && verbose ) {
+                        if( ((cidr_equals(address, cidr_addr_network(address)) < 0) && (cidr_get_pflen(address) != 128)) ) {
+                            char* network_addr = cidr_to_str(cidr_addr_network(address), 0);
+                            printf("%s is an IPv6 host address, not a network address. Did you mean %s?\n", address_str, network_addr);
+                        }
+                    }
                 }
                 break;
             case IS_IPV6_MULTICAST:
@@ -368,11 +446,21 @@ int main(int argc, char* argv[])
                    if prefix length is given */
                  if( !is_any_cidr(address_str) )
                  {
-                     result = RESULT_FAILURE;
+                    if( verbose ) {
+                        printf("Cannot check if %s is a valid host address: missing prefix length\n", address_str);
+                    }
+                    result = RESULT_FAILURE;
                  }
                  else
                  {
                      result = is_any_host(address);
+                     if( (result == RESULT_FAILURE) && verbose ) {
+                         if( ((cidr_equals(address, cidr_addr_network(address)) >= 0) &&
+                              (cidr_get_pflen(address) != 32) &&
+                              (cidr_get_pflen(address) != 128)) ) {
+                             printf("%s is a network address, not a host address\n", address_str);
+                         }
+                     }
                  }
                  break;
             case IS_ANY_NET:
@@ -380,11 +468,22 @@ int main(int argc, char* argv[])
                    if prefix length is given */
                  if( !is_any_cidr(address_str) )
                  {
-                     result = RESULT_FAILURE;
+                     if( verbose ) {
+                         printf("Cannot check if %s is a valid network address: missing prefix length\n", address_str);
+                      }
+                    result = RESULT_FAILURE;
                  }
                  else
                  {
                      result = is_any_net(address);
+                     if( (result == RESULT_FAILURE) && verbose ) {
+                         if( ((cidr_equals(address, cidr_addr_network(address)) < 0) &&
+                              (cidr_get_pflen(address) != 128) &&
+                              (cidr_get_pflen(address) != 32)) ) {
+                             char* network_addr = cidr_to_str(cidr_addr_network(address), 0);
+                             printf("%s is a host address, not a network address. Did you mean %s?\n", address_str, network_addr);
+                         }
+                     }
                  }
                  break;
             default:
@@ -464,5 +563,3 @@ License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software: you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n");
 }
-
-
