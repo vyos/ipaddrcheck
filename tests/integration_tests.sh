@@ -20,7 +20,7 @@
 
 . ./assert.sh
 
-IPADDRCHECK=ipaddrcheck
+IPADDRCHECK=../src/ipaddrcheck
 
 # test data
 ipv4_single_positive=(
@@ -60,6 +60,7 @@ ipv6_single_positive=(
 
 ipv6_single_negative=(
     gggg::ffff
+    2001:db8::bad::f00d
 )
 
 ipv6_cidr_positive=(
