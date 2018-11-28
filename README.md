@@ -1,6 +1,8 @@
 ipaddrcheck
 ===========
 
+## Using
+
 An IPv4 and IPv6 validation utility for use in scripts
 
 Depends on libcidr by Matthew Fuller (http://www.over-yonder.net/~fullermd/projects/libcidr) and libpcre.
@@ -44,3 +46,18 @@ Depends on libcidr by Matthew Fuller (http://www.over-yonder.net/~fullermd/proje
         1    if check failed,
         2    if a problem occured (wrong option, internal error etc.)
 
+## Building
+
+Building from source:
+
+```
+autoreconf -i
+./configure
+make && make install
+```
+
+Running unit tests:
+
+```
+make check
+```
