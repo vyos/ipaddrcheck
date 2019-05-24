@@ -56,6 +56,7 @@ mv ../*.deb /tmp/$GIT_BRANCH/packages/'''
             sh '''#!/bin/bash
 git clone --single-branch --branch $GIT_BRANCH $GIT_URL $BUILD_NUMBER
 cd $BUILD_NUMBER
+sed -i \'s/<<< \${3:-}//g\' tests/assert.sh
 sudo apt-get -o Acquire::Check-Valid-Until=false update
 sudo mk-build-deps -i -r -t \'apt-get --no-install-recommends -yq\' debian/control
 dpkg-buildpackage -b -us -uc -tc
