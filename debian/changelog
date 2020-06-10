@@ -1,3 +1,9 @@
+ipaddrcheck (1.2) unstable; urgency=medium
+
+  * Correct recognition of IPv4 /31 and IPv6 /127 as valid host addresses.
+
+ -- Daniil Baturin <daniil@baturin.org>  Wed, 10 Jun 2020 20:03:10 +0300
+
 ipaddrcheck (1.1) unstable; urgency=medium
 
   * Add a --verbose option and diagnostic messages for common mistakes
