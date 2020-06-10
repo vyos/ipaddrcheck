@@ -159,7 +159,7 @@ done
 # --is-ipv4
 for address in \
     ${ipv4_single_positive[*]} \
-    ${ipv4_cidr_positive[*]} 
+    ${ipv4_cidr_positive[*]}
 do
     assert_raises "$IPADDRCHECK --is-ipv4 $address" 0
 done
@@ -176,7 +176,7 @@ done
 
 # --is-ipv4-cidr
 for address in \
-    ${ipv4_cidr_positive[*]} 
+    ${ipv4_cidr_positive[*]}
 do
     assert_raises "$IPADDRCHECK --is-ipv4-cidr $address" 0
 done
@@ -193,7 +193,7 @@ done
 
 # --is-ipv4-single
 for address in \
-    ${ipv4_single_positive[*]} 
+    ${ipv4_single_positive[*]}
 do
     assert_raises "$IPADDRCHECK --is-ipv4-single $address" 0
 done
