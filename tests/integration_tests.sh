@@ -74,6 +74,26 @@ ipv6_cidr_negative=(
     2001:db8::/129
 )
 
+ipv4_host_positive=(
+    192.0.2.1/24
+    192.0.2.100/32
+    192.0.2.100/31
+)
+
+ipv4_host_negative=(
+    192.0.2.0/24
+    192.0.2.64/27
+)
+
+ipv6_host_positive=(
+    2001:db8:1::1/64
+    2001:db8:1::1/127
+)
+
+ipv6_host_negative=(
+    2001:db8::/32
+)
+
 string="garbage"
 
 # begin ipaddrcheck_integration
@@ -189,6 +209,31 @@ do
 done
 
 # --is-any-host
+for address in \
+    ${ipv4_host_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-any-host $address" 0
+done
+
+for address in \
+    ${ipv4_host_negative[*]}
+do
+    assert_raises "$IPADDRCHECK --is-any-host $address" 1
+done
+
+for address in \
+    ${ipv6_host_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-any-host $address" 0
+done
+
+for address in \
+    ${ipv6_host_negative[*]}
+do
+    assert_raises "$IPADDRCHECK --is-any-host $address" 1
+done
+
+
 # --is-any-net
 # --is-ipv4-host
 # --is-ipv4-net
