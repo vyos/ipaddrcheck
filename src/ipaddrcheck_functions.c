@@ -248,7 +248,7 @@ int is_ipv4_host(CIDR *address)
 
     if( (cidr_get_proto(address) == CIDR_IPV4) &&
         ((cidr_equals(address, cidr_addr_network(address)) < 0) ||
-        (cidr_get_pflen(address) == 32)) )
+        (cidr_get_pflen(address) >= 31)) )
     {
          result = RESULT_SUCCESS;
     }
@@ -398,7 +398,7 @@ int is_ipv6_host(CIDR *address)
 
     if( (cidr_get_proto(address) == CIDR_IPV6) &&
         ((cidr_equals(address, cidr_addr_network(address)) < 0) ||
-        (cidr_get_pflen(address) == 128)) )
+        (cidr_get_pflen(address) >= 127)) )
     {
          result = RESULT_SUCCESS;
     }
