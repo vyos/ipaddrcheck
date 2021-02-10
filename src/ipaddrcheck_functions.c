@@ -37,8 +37,8 @@
  */
 
 
-/* Does it contain double semicolons? This is not allowed in IPv6 addresses */
-int duplicate_double_semicolons(char* address_str) {
+/* Does it contain double colons? This is not allowed in IPv6 addresses */
+int duplicate_double_colons(char* address_str) {
     int offsets[1];
     pcre *re;
     int rc;

@@ -258,15 +258,14 @@ int main(int argc, char* argv[])
         return(EXIT_FAILURE);
     }
 
-    /* FIXUP: libcidr allows more than one double semicolon, but the RFC does not! */
-    if( duplicate_double_semicolons(address_str) ) {
+    /* FIXUP: libcidr allows more than one double colon, but RFC 4291 does not! */
+    if( duplicate_double_colons(address_str) ) {
         if( verbose )
         {
             printf("More than one \"::\" is not allowed in IPv6 addresses\n");
         }
         return(EXIT_FAILURE);
     }
-    /* no else needed, the rest is one big else */
 
     while( (action_count >= 0) && (result == RESULT_SUCCESS) )
     {
