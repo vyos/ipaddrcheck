@@ -2,7 +2,7 @@ Source: ipaddrcheck
 Section: contrib/net
 Priority: extra
 Maintainer: VyOS Package Maintainers <maintainers@vyos.net>
-Build-Depends: autoconf, debhelper (>= 9), libpcre3-dev, libcidr-dev | libcidr0-dev, check
+Build-Depends: autoconf, debhelper (>= 9), libpcre3-dev, libcidr-dev, check
 Standards-Version: 3.9.6
 
 Package: ipaddrcheck
