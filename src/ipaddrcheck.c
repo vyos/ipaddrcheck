@@ -257,7 +257,16 @@ int main(int argc, char* argv[])
 
     if( ipv4_range_check )
     {
-        return is_ipv4_range(address_str, verbose);
+        int result =  is_ipv4_range(address_str, verbose);
+
+        if( result == RESULT_SUCCESS )
+        {
+            return(EXIT_SUCCESS);
+        }
+        else
+        {
+            return(EXIT_FAILURE);
+        }
     }
 
     CIDR *address;
