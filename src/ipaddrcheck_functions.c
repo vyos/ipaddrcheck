@@ -20,6 +20,8 @@
  *
  */
 
+#include <netinet/in.h>
+
 #include "ipaddrcheck_functions.h"
 
 /*
@@ -527,3 +529,69 @@ int is_any_net(CIDR *address)
 }
 
 
+int is_ipv4_range(char* range_str, int verbose)
+{
+    int result = RESULT_SUCCESS;
+
+    int offsets[1];
+    pcre *re;
+    int rc;
+    const char *error;
+    int erroffset;
+
+    re = pcre_compile("^([0-9\\.]+\\-[0-9\\.]+)$",
+                      0, &error, &erroffset, NULL);
+    rc = pcre_exec(re, NULL, range_str, strlen(range_str), 0, 0, offsets, 1);
+
+    if( rc < 0 )
+    {
+        fprintf(stderr, "Malformed range %s: must be a pair of hyphen-separated IPv4 addresses\n", range_str);
+        result = RESULT_FAILURE;
+    }
+    else
+    {
+        /* We already know that the string has two hyphen-separated parts,
+           so we can cheat a bit instead of handling the genral case with arbitrary numbers of tokens. */
+        char* left = strtok(range_str, "-");
+        char* right = strtok(NULL, "-");
+
+        if( !is_ipv4_single(left) )
+        {
+            if( verbose )
+            {
+                fprintf(stderr, "Malformed range %s: %s is not a valid IPv4 address\n", range_str, left);
+            }
+            result = RESULT_FAILURE;
+        }
+        else if( !is_ipv4_single(right) )
+        {
+            if( verbose )
+            {
+                fprintf(stderr, "Malformed range %s: %s is not a valid IPv4 address\n", range_str, right);
+            }
+            result = RESULT_FAILURE;
+        }
+        else
+        {
+            const CIDR* left_addr = cidr_from_str(left);
+            const CIDR* right_addr = cidr_from_str(right);
+            struct in_addr* left_in_addr = cidr_to_inaddr(left_addr, NULL);
+            struct in_addr* right_in_addr = cidr_to_inaddr(right_addr, NULL);
+
+            if( left_in_addr->s_addr < right_in_addr->s_addr )
+            {
+                result = RESULT_SUCCESS;;
+            }
+            else
+            {
+                if( verbose )
+                {
+                    fprintf(stderr, "Malformed IPv4 range %s: its first address is greater than the last\n", range_str);
+                }
+                result = RESULT_FAILURE;
+            }
+        }
+    }
+
+    return(result);
+}
