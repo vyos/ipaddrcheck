@@ -573,8 +573,8 @@ int is_ipv4_range(char* range_str, int verbose)
         }
         else
         {
-            const CIDR* left_addr = cidr_from_str(left);
-            const CIDR* right_addr = cidr_from_str(right);
+            CIDR* left_addr = cidr_from_str(left);
+            CIDR* right_addr = cidr_from_str(right);
             struct in_addr* left_in_addr = cidr_to_inaddr(left_addr, NULL);
             struct in_addr* right_in_addr = cidr_to_inaddr(right_addr, NULL);
 
@@ -590,6 +590,9 @@ int is_ipv4_range(char* range_str, int verbose)
                 }
                 result = RESULT_FAILURE;
             }
+
+            cidr_free(left_addr);
+            cidr_free(right_addr);
         }
     }
 
