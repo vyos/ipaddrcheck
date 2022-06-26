@@ -48,6 +48,16 @@ ipv4_cidr_negative=(
     192.0.2.666/32
 )
 
+ipv4_range_positive=(
+    192.0.2.0-192.0.2.100
+)
+
+ipv4_range_negative=(
+    192.0.2.-192.0.2.100
+    192.0.2.0-
+    192.0.2.200-192.0.2.100
+)
+
 ipv6_single_positive=(
     2001:0db8:0000:0000:0000:ff00:0042:8329
     2001:db8:0:0:0:ff00:42:8329
@@ -250,5 +260,17 @@ done
 # --is-ipv6-multicast
 # --is-ipv6-link-local
 # --is-valid-intf-address
+
+for range in \
+    ${ipv4_range_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-ipv4-range $range" 0
+done
+
+for range in \
+    ${ipv4_range_negative[*]}
+do
+    assert_raises "$IPADDRCHECK --is-ipv4-range $range" 1
+done
 
 assert_end ipaddrcheck_integration
