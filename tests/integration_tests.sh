@@ -261,6 +261,7 @@ done
 # --is-ipv6-link-local
 # --is-valid-intf-address
 
+# --is-ipv4-range
 for range in \
     ${ipv4_range_positive[*]}
 do
