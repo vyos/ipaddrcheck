@@ -39,7 +39,7 @@
  * the format was.
  */
 
-int regex_matches(char* regex, char* str)
+int regex_matches(const char* regex, const char* str)
 {
     int offsets[1];
     pcre *re;
@@ -459,9 +459,9 @@ int is_ipv4_range(char* range_str, int verbose)
 {
     int result = RESULT_SUCCESS;
 
-    int rc = regex_matches("^([0-9\\.]+\\-[0-9\\.]+)$", range_str);
+    int regex_check_res = regex_matches("^([0-9\\.]+\\-[0-9\\.]+)$", range_str);
 
-    if( rc == RESULT_FAILURE )
+    if( !regex_check_res )
     {
         if( verbose )
         {
@@ -471,14 +471,43 @@ int is_ipv4_range(char* range_str, int verbose)
     }
     else
     {
-        /* We already know that the string has two hyphen-separated parts,
-           so we can cheat a bit instead of handling the genral case with arbitrary numbers of tokens. */
-        char* left = strtok(range_str, "-");
-        char* right = strtok(NULL, "-");
+       /* Extract sub-components from the range string. */
+
+        /* Alocate memory for the components.
+           We know that an IPv4 address is always 15 characters or less, plus a null byte. */
+        char left[16];
+        char right[16];
+
+        /* Split the string at the hyphen.
+           If the regex check succeeded, we know the hyphen is there. */
+        char* ptr = left;
+        int length = strlen(range_str);
+        int pos = 0;
+        int index = 0;
+        while(pos < length)
+        {
+            if( range_str[pos] == '-' )
+            {
+                ptr[index] = '\0';
+                ptr = right;
+                index = 0;
+            }
+            else
+            {
+                ptr[index] = range_str[pos];
+                index++;
+            }
+
+            pos++;
+        }
+        ptr[index] = '\0';
 
         if( !is_ipv4_single(left) )
         {
-            fprintf(stderr, "Malformed range %s: %s is not a valid IPv4 address\n", range_str, left);
+            if( verbose )
+            {
+                fprintf(stderr, "Malformed range %s: %s is not a valid IPv4 address\n", range_str, left);
+            }
             result = RESULT_FAILURE;
         }
         else if( !is_ipv4_single(right) )
@@ -498,7 +527,7 @@ int is_ipv4_range(char* range_str, int verbose)
 
             if( left_in_addr->s_addr < right_in_addr->s_addr )
             {
-                result = RESULT_SUCCESS;;
+                result = RESULT_SUCCESS;
             }
             else
             {
