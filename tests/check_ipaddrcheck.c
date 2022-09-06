@@ -403,6 +403,14 @@ START_TEST (test_is_any_net)
 }
 END_TEST
 
+START_TEST (test_is_ipv4_range)
+{
+    ck_assert_int_eq(is_ipv4_range("192.0.2.0-192.0.2.10", 0), RESULT_SUCCESS);
+    ck_assert_int_eq(is_ipv4_range("192.0.2.-", 0), RESULT_FAILURE);
+    ck_assert_int_eq(is_ipv4_range("192.0.2.99-192.0.2.11", 0), RESULT_FAILURE);
+}
+END_TEST
+
 
 Suite *ipaddrcheck_suite(void)
 {
@@ -433,6 +441,7 @@ Suite *ipaddrcheck_suite(void)
     tcase_add_test(tc_core, test_is_valid_intf_address);
     tcase_add_test(tc_core, test_is_any_host);
     tcase_add_test(tc_core, test_is_any_net);
+    tcase_add_test(tc_core, test_is_ipv4_range);
 
     suite_add_tcase(s, tc_core);
 

@@ -20,6 +20,9 @@
  *
  */
 
+#include <netinet/in.h>
+#include <assert.h>
+
 #include "ipaddrcheck_functions.h"
 
 /*
@@ -36,134 +39,59 @@
  * the format was.
  */
 
-
-/* Does it contain double colons? This is not allowed in IPv6 addresses */
-int duplicate_double_colons(char* address_str) {
+int regex_matches(const char* regex, const char* str)
+{
     int offsets[1];
     pcre *re;
     int rc;
     const char *error;
     int erroffset;
 
-    re = pcre_compile(".*(::).*\\1", 0, &error, &erroffset, NULL);
-    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
+    re = pcre_compile(regex, 0, &error, &erroffset, NULL);
+    assert(re != NULL);
+
+    rc = pcre_exec(re, NULL, str, strlen(str), 0, 0, offsets, 1);
 
     if( rc >= 0)
     {
-        return(1);
+        return RESULT_SUCCESS;
     }
     else
     {
-        return(0);
+        return RESULT_FAILURE;
     }
+}
+
+
+/* Does it contain double colons? This is not allowed in IPv6 addresses */
+int duplicate_double_colons(char* address_str) {
+    return regex_matches(".*(::).*\\1", address_str);
 }
 
 /* Does it look like IPv4 CIDR (e.g. 192.0.2.1/24)? */
 int is_ipv4_cidr(char* address_str)
 {
-    int result;
-
-    int offsets[1];
-    pcre *re;
-    int rc;
-    const char *error;
-    int erroffset;
-
-    re = pcre_compile("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0)\\/([1-9]\\d*|0))$",
-                      0, &error, &erroffset, NULL);
-    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
-
-    if( rc < 0 )
-    {
-        result = RESULT_FAILURE;
-    }
-    else
-    {
-        result = RESULT_SUCCESS;
-    }
-
-    return(result);
+    return regex_matches("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0)\\/([1-9]\\d*|0))$",
+        address_str);
 }
 
 /* Is it a single dotted decimal address? */
 int is_ipv4_single(char* address_str)
 {
-    int result;
-
-    int offsets[1];
-    pcre *re;
-    int rc;
-    const char *error;
-    int erroffset;
-
-    re = pcre_compile("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0))$",
-                      0, &error, &erroffset, NULL);
-    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
-
-    if( rc < 0 )
-    {
-        result = RESULT_FAILURE;
-    }
-    else
-    {
-        result = RESULT_SUCCESS;
-    }
-
-    return(result);
+    return regex_matches("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0))$",
+        address_str);
 }
 
 /* Is it an IPv6 address with prefix length? */
 int is_ipv6_cidr(char* address_str)
 {
-    int result;
-
-    int offsets[1];
-    pcre *re;
-    int rc;
-    const char *error;
-    int erroffset;
-
-    re = pcre_compile("^((([0-9a-fA-F\\:])+)(\\/\\d{1,3}))$",
-                      0, &error, &erroffset, NULL);
-    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
-
-    if( rc < 0 )
-    {
-        result = RESULT_FAILURE;
-    }
-    else
-    {
-        result = RESULT_SUCCESS;
-    }
-
-    return(result);
+    return regex_matches("^((([0-9a-fA-F\\:])+)(\\/\\d{1,3}))$", address_str);
 }
 
 /* Is it a single IPv6 address? */
 int is_ipv6_single(char* address_str)
 {
-    int result;
-
-    int offsets[1];
-    pcre *re;
-    int rc;
-    const char *error;
-    int erroffset;
-
-    re = pcre_compile("^(([0-9a-fA-F\\:])+)$",
-                      0, &error, &erroffset, NULL);
-    rc = pcre_exec(re, NULL, address_str, strlen(address_str), 0, 0, offsets, 1);
-
-    if( rc < 0 )
-    {
-        result = RESULT_FAILURE;
-    }
-    else
-    {
-        result = RESULT_SUCCESS;
-    }
-
-    return(result);
+    return regex_matches("^(([0-9a-fA-F\\:])+)$", address_str);
 }
 
 /* Is it a CIDR-formatted IPv4 or IPv6 address? */
@@ -527,3 +455,93 @@ int is_any_net(CIDR *address)
 }
 
 
+int is_ipv4_range(char* range_str, int verbose)
+{
+    int result = RESULT_SUCCESS;
+
+    int regex_check_res = regex_matches("^([0-9\\.]+\\-[0-9\\.]+)$", range_str);
+
+    if( !regex_check_res )
+    {
+        if( verbose )
+        {
+            fprintf(stderr, "Malformed range %s: must be a pair of hyphen-separated IPv4 addresses\n", range_str);
+        }
+        result = RESULT_FAILURE;
+    }
+    else
+    {
+       /* Extract sub-components from the range string. */
+
+        /* Alocate memory for the components.
+           We know that an IPv4 address is always 15 characters or less, plus a null byte. */
+        char left[16];
+        char right[16];
+
+        /* Split the string at the hyphen.
+           If the regex check succeeded, we know the hyphen is there. */
+        char* ptr = left;
+        int length = strlen(range_str);
+        int pos = 0;
+        int index = 0;
+        while(pos < length)
+        {
+            if( range_str[pos] == '-' )
+            {
+                ptr[index] = '\0';
+                ptr = right;
+                index = 0;
+            }
+            else
+            {
+                ptr[index] = range_str[pos];
+                index++;
+            }
+
+            pos++;
+        }
+        ptr[index] = '\0';
+
+        if( !is_ipv4_single(left) )
+        {
+            if( verbose )
+            {
+                fprintf(stderr, "Malformed range %s: %s is not a valid IPv4 address\n", range_str, left);
+            }
+            result = RESULT_FAILURE;
+        }
+        else if( !is_ipv4_single(right) )
+        {
+            if( verbose )
+            {
+                fprintf(stderr, "Malformed range %s: %s is not a valid IPv4 address\n", range_str, right);
+            }
+            result = RESULT_FAILURE;
+        }
+        else
+        {
+            CIDR* left_addr = cidr_from_str(left);
+            CIDR* right_addr = cidr_from_str(right);
+            struct in_addr* left_in_addr = cidr_to_inaddr(left_addr, NULL);
+            struct in_addr* right_in_addr = cidr_to_inaddr(right_addr, NULL);
+
+            if( left_in_addr->s_addr < right_in_addr->s_addr )
+            {
+                result = RESULT_SUCCESS;
+            }
+            else
+            {
+                if( verbose )
+                {
+                    fprintf(stderr, "Malformed IPv4 range %s: its first address is greater than the last\n", range_str);
+                }
+                result = RESULT_FAILURE;
+            }
+
+            cidr_free(left_addr);
+            cidr_free(right_addr);
+        }
+    }
+
+    return(result);
+}

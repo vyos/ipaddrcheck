@@ -49,6 +49,8 @@
 #define ALLOW_LOOPBACK        250
 #define IS_ANY_HOST           260
 #define IS_ANY_NET            270
+#define IS_IPV4_RANGE         280
+#define IS_IPV6_RANGE         290
 #define NO_ACTION             500
 
 static const struct option options[] =
@@ -77,6 +79,8 @@ static const struct option options[] =
     { "allow-loopback",        no_argument, NULL, 'C' },
     { "is-any-host",           no_argument, NULL, 'D' },
     { "is-any-net",            no_argument, NULL, 'E' },
+    { "is-ipv4-range",         no_argument, NULL, 'F' },
+    { "is-ipv6-range",         no_argument, NULL, 'G' },
     { "version",               no_argument, NULL, 'z' },
     { "help",                  no_argument, NULL, '?' },
     { "verbose",               no_argument, NULL, 'V' },
@@ -102,6 +106,9 @@ int main(int argc, char* argv[])
     int no_action = 0;   /* Indicates the option modifies program behaviour
                             but doesn't have its own action */
 
+    int ipv4_range_check = 0; /* Disabled quick validity check for the argment string,
+                            since it needs to be split into components first. */
+
     int verbose = 0;
 
     const char* program_name = argv[0]; /* Program name for use in messages */
@@ -117,7 +124,7 @@ int main(int argc, char* argv[])
         return(RESULT_INT_ERROR);
     }
 
-    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABCDEV?", options, &option_index)) != -1 )
+    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABCDEFGV?", options, &option_index)) != -1 )
     {
          switch(optc)
          {
@@ -196,6 +203,12 @@ int main(int argc, char* argv[])
              case 'E':
                  action = IS_ANY_NET;
                  break;
+             case 'F':
+                 ipv4_range_check = 1;
+                 break;
+             case 'G':
+                 action = IS_IPV6_RANGE;
+                 break;
              case 'V':
                  verbose = 1;
                  break;
@@ -242,8 +255,23 @@ int main(int argc, char* argv[])
          return(RESULT_INT_ERROR);
     }
 
+    if( ipv4_range_check )
+    {
+        int result =  is_ipv4_range(address_str, verbose);
+
+        if( result == RESULT_SUCCESS )
+        {
+            return(EXIT_SUCCESS);
+        }
+        else
+        {
+            return(EXIT_FAILURE);
+        }
+    }
+
     CIDR *address;
     address = cidr_from_str(address_str);
+
     int result = RESULT_SUCCESS;
 
     /* Check if the address is valid and well-formatted at all,
