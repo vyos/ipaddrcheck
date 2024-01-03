@@ -63,12 +63,13 @@ int regex_matches(const char* regex, const char* str)
 }
 
 
-/* Does it contain double colons? This is not allowed in IPv6 addresses */
+/* Does it contain more than one double colon?
+   IPv6 addresses allow replacing no more than one group of zeros with a '::' shortcut. */
 int duplicate_double_colons(char* address_str) {
     return regex_matches(".*(::).*\\1", address_str);
 }
 
-/* Does it look like IPv4 CIDR (e.g. 192.0.2.1/24)? */
+/* Is it an IPv4 address with prefix length (e.g., 192.0.2.1/24)? */
 int is_ipv4_cidr(char* address_str)
 {
     return regex_matches("^((([1-9]\\d{0,2}|0)\\.){3}([1-9]\\d{0,2}|0)\\/([1-9]\\d*|0))$",
@@ -82,7 +83,7 @@ int is_ipv4_single(char* address_str)
         address_str);
 }
 
-/* Is it an IPv6 address with prefix length? */
+/* Is it an IPv6 address with prefix length (e.g., 2001:db8::1/64)? */
 int is_ipv6_cidr(char* address_str)
 {
     return regex_matches("^((([0-9a-fA-F\\:])+)(\\/\\d{1,3}))$", address_str);
@@ -169,7 +170,7 @@ int is_ipv4(CIDR *address)
      return(result);
 }
 
-/* Is it a correct IPv4 host (i.e. not network) address? */
+/* Is it a correct IPv4 host address (i.e., not a network address)? */
 int is_ipv4_host(CIDR *address)
 {
     int result;
@@ -212,7 +213,7 @@ int is_ipv4_broadcast(CIDR *address)
     int result;
 
     /* The very concept of broadcast address doesn't apply to
-       IPv6 and point-to-point or /32 IPv4 */
+       IPv6 and point-to-point (/31) or isolated (/32) IPv4 addresses. */
     if( (cidr_get_proto(address) == CIDR_IPV4) &&
         (cidr_equals(address, cidr_addr_broadcast(address)) == 0 ) &&
         (cidr_get_pflen(address) < 31) )
@@ -281,7 +282,7 @@ int is_ipv4_link_local(CIDR *address)
     return(result);
 }
 
-/* Is it an IPv4 RFC1918 address? */
+/* Is it a private (RFC 1918) IPv4 address? */
 int is_ipv4_rfc1918(CIDR *address)
 {
     int result;
@@ -301,8 +302,7 @@ int is_ipv4_rfc1918(CIDR *address)
     return(result);
 }
 
-/* is it a correct IPv6 host or subnet address,
-   with or withour mask */
+/* is it a correct IPv6 host or a subnet address, with or without network mask? */
 int is_ipv6(CIDR *address)
 {
      int result;
@@ -392,7 +392,9 @@ int is_ipv6_link_local(CIDR *address)
     return(result);
 }
 
-/* Is it an address that can belong an interface? */
+/* Is it an address that can be assigned to a network interface?
+   (i.e., is it a host address that is not reserved for any special use)
+ */
 int is_valid_intf_address(CIDR *address, char* address_str, int allow_loopback)
 {
     int result;
@@ -454,7 +456,7 @@ int is_any_net(CIDR *address)
     return(result);
 }
 
-
+/* Is it a valid IPv4 address range? */
 int is_ipv4_range(char* range_str, int verbose)
 {
     int result = RESULT_SUCCESS;
@@ -473,8 +475,8 @@ int is_ipv4_range(char* range_str, int verbose)
     {
        /* Extract sub-components from the range string. */
 
-        /* Alocate memory for the components.
-           We know that an IPv4 address is always 15 characters or less, plus a null byte. */
+        /* Allocate memory for the components of the range.
+           We need at most 15 characters for an IPv4 address, plus space for the terminating null byte. */
         char left[16];
         char right[16];
 
