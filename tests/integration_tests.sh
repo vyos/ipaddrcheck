@@ -3,7 +3,7 @@
 # integration_tests.sh: ipaddrcheck integration tests
 #
 # Copyright (C) 2013 Daniil Baturin
-# Copyright (C) 2018 VyOS maintainers and contributors
+# Copyright (C) 2018-2024 VyOS maintainers and contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 or later as
@@ -56,6 +56,16 @@ ipv4_range_negative=(
     192.0.2.-192.0.2.100
     192.0.2.0-
     192.0.2.200-192.0.2.100
+)
+
+ipv6_range_positive=(
+    2001:db8::1-2001:db8::99
+)
+
+ipv6_range_negative=(
+    2001:db8:xx-2001:db8::99
+    2001:db:-
+    2001:db8::99-2001:db8::1
 )
 
 ipv6_single_positive=(
@@ -272,6 +282,19 @@ for range in \
     ${ipv4_range_negative[*]}
 do
     assert_raises "$IPADDRCHECK --is-ipv4-range $range" 1
+done
+
+# --is-ipv6-range
+for range in \
+    ${ipv6_range_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-ipv6-range $range" 0
+done
+
+for range in \
+    ${ipv6_range_negative[*]}
+do
+    assert_raises "$IPADDRCHECK --is-ipv6-range $range" 1
 done
 
 assert_end ipaddrcheck_integration

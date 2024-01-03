@@ -2,7 +2,7 @@
  * ipaddrcheck.c: an IPv4/IPv6 validator
  *
  * Copyright (C) 2013 Daniil Baturin
- * Copyright (C) 2018 VyOS maintainers and contributors
+ * Copyright (C) 2018-2024 VyOS maintainers and contributors
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or later as
@@ -49,8 +49,15 @@
 #define ALLOW_LOOPBACK        250
 #define IS_ANY_HOST           260
 #define IS_ANY_NET            270
+
+/* XXX: These options are handled outside of the main switch
+ * because they the main switch was design to handle
+ * only single addresses directly parseable by libcidr.
+ * Ideally, we should refactor that at some point in the future...
+ */
 #define IS_IPV4_RANGE         280
 #define IS_IPV6_RANGE         290
+
 #define NO_ACTION             500
 
 static const struct option options[] =
@@ -106,8 +113,11 @@ int main(int argc, char* argv[])
     int no_action = 0;   /* Indicates the option modifies program behaviour
                             but doesn't have its own action */
 
-    int ipv4_range_check = 0; /* Disabled quick validity check for the argment string,
-                            since it needs to be split into components first. */
+    /* Range checks are handled separately now, without a quick sanity check,
+     * since their argument is not a single address and needs to be split first.
+     */
+    int ipv4_range_check = 0;
+    int ipv6_range_check = 0;
 
     int verbose = 0;
 
@@ -207,7 +217,7 @@ int main(int argc, char* argv[])
                  ipv4_range_check = 1;
                  break;
              case 'G':
-                 action = IS_IPV6_RANGE;
+                 ipv6_range_check = 1;
                  break;
              case 'V':
                  verbose = 1;
@@ -255,9 +265,10 @@ int main(int argc, char* argv[])
          return(RESULT_INT_ERROR);
     }
 
+    /* If the argument is a range, use special functions that can handle it. */
     if( ipv4_range_check )
     {
-        int result =  is_ipv4_range(address_str, verbose);
+        int result = is_ipv4_range(address_str, verbose);
 
         if( result == RESULT_SUCCESS )
         {
@@ -268,6 +279,24 @@ int main(int argc, char* argv[])
             return(EXIT_FAILURE);
         }
     }
+
+    if( ipv6_range_check )
+    {
+        int result = is_ipv6_range(address_str, verbose);
+
+        if( result == RESULT_SUCCESS )
+        {
+            return(EXIT_SUCCESS);
+        }
+        else
+        {
+            return(EXIT_FAILURE);
+        }
+    }
+
+   /* If ipaddrcheck is called with options other than --is-ipv4-range or --is-ipv6-range,
+    * the argument is a single address that we can parse beforehand and pass to various checking functions.
+    */
 
     CIDR *address;
     address = cidr_from_str(address_str);
@@ -498,8 +527,7 @@ int main(int argc, char* argv[])
             case NO_ACTION:
                  break;
             case IS_ANY_HOST:
-                /* Host vs. network address check only makes sense
-                   if prefix length is given */
+                /* Host vs. network address check only makes sense if prefix length is given */
                  if( !is_any_cidr(address_str) )
                  {
                     if( verbose )
@@ -522,8 +550,7 @@ int main(int argc, char* argv[])
                  }
                  break;
             case IS_ANY_NET:
-                /* Host vs. network address check only makes sense
-                   if prefix length is given */
+                /* Host vs. network address check only makes sense if prefix length is given */
                  if( !is_any_cidr(address_str) )
                  {
                      if( verbose )
@@ -574,7 +601,7 @@ void print_help(const char* program_name)
 {
     printf("Usage: %s <OPTIONS> [STRING]\n", program_name);
     printf("\
-Options:\n\
+Address checking options:\n\
   --is-valid                 Check if STRING is a valid IPv4 or IPv6 address\n\
                                with or without prefix length\n\
   --is-any-cidr              Check if STRING is a valid IPv4 or IPv6 address\n\
@@ -602,8 +629,14 @@ Options:\n\
   --is-ipv6-link-local       Check if STRING is an IPv6 link-local address \n\
   --is-valid-intf-address    Check if STRING is an IPv4 or IPv6 address that \n\
                                can be assigned to a network interface \n\
+  --is-ipv4-range            Check if STRING is a valid IPv4 address range\n\
+  --is-ipv6-range            Check if STRING is a valid IPv6 address range\n\
+  \n\
+Behavior options:\n\
   --allow-loopback           When used with --is-valid-intf-address,\n\
                                makes IPv4 loopback addresses pass the check\n\
+\n\
+Other options:\n\
   --version                  Print version information and exit \n\
   --help                     Print help message and exit\n\
 \n\
@@ -619,7 +652,7 @@ Exit codes:\n\
 void print_version(void)
 {
     printf("%s %s\n\n", PACKAGE_NAME, PACKAGE_VERSION);
-    printf("Copyright (C) VyOS maintainers and contributors 2018.\n\
+    printf("Copyright (C) 2024 VyOS maintainers and contributors.\n\
 License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software: you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n");

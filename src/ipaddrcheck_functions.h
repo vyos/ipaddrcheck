@@ -2,7 +2,7 @@
  * ipaddrcheck_functions.h: macros and prototypes for ipaddrcheck
  *
  * Copyright (C) 2013 Daniil Baturin
- * Copyright (C) 2018 VyOS maintainers and contributors
+ * Copyright (C) 2018-2024 VyOS maintainers and contributors
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -77,5 +77,6 @@ int is_valid_intf_address(CIDR *address, char* address_str, int allow_loopback);
 int is_any_host(CIDR *address);
 int is_any_net(CIDR *address);
 int is_ipv4_range(char* range_str, int verbose);
+int is_ipv6_range(char* range_str, int verbose);
 
 #endif /* IPADDRCHECK_FUNCTIONS_H */

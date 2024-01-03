@@ -2,7 +2,7 @@
  * ipaddrcheck_functions.c: IPv4/IPv6 validation functions for ipaddrcheck
  *
  * Copyright (C) 2013 Daniil Baturin
- * Copyright (C) 2018 VyOS maintainers and contributors
+ * Copyright (C) 2018-2024 VyOS maintainers and contributors
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -456,6 +456,50 @@ int is_any_net(CIDR *address)
     return(result);
 }
 
+/* Split a hyphen-separated range into its left and right components.
+ * This function is patently unsafe,
+ * whether it's safe to do what it does should be determined by its callers.
+ */
+void split_range(char* range_str, char* left, char*right)
+{
+    char* ptr = left;
+    int length = strlen(range_str);
+    int pos = 0;
+    int index = 0;
+    while(pos < length)
+    {
+        if( range_str[pos] == '-' )
+        {
+            ptr[index] = '\0';
+            ptr = right;
+            index = 0;
+        }
+        else
+        {
+            ptr[index] = range_str[pos];
+            index++;
+        }
+
+        pos++;
+    }
+    ptr[index] = '\0';
+
+    return;
+}
+
+int compare_ipv6(struct in6_addr *left, struct in6_addr *right)
+{
+    int i = 0;
+    for( i = 0; i < 16; i++ )
+    {
+        if (left->s6_addr[i] < right->s6_addr[i])
+            return -1;
+        else if (left->s6_addr[i] > right->s6_addr[i])
+            return 1;
+    }
+    return 0;
+}
+
 /* Is it a valid IPv4 address range? */
 int is_ipv4_range(char* range_str, int verbose)
 {
@@ -482,27 +526,7 @@ int is_ipv4_range(char* range_str, int verbose)
 
         /* Split the string at the hyphen.
            If the regex check succeeded, we know the hyphen is there. */
-        char* ptr = left;
-        int length = strlen(range_str);
-        int pos = 0;
-        int index = 0;
-        while(pos < length)
-        {
-            if( range_str[pos] == '-' )
-            {
-                ptr[index] = '\0';
-                ptr = right;
-                index = 0;
-            }
-            else
-            {
-                ptr[index] = range_str[pos];
-                index++;
-            }
-
-            pos++;
-        }
-        ptr[index] = '\0';
+        split_range(range_str, left, right);
 
         if( !is_ipv4_single(left) )
         {
@@ -527,7 +551,7 @@ int is_ipv4_range(char* range_str, int verbose)
             struct in_addr* left_in_addr = cidr_to_inaddr(left_addr, NULL);
             struct in_addr* right_in_addr = cidr_to_inaddr(right_addr, NULL);
 
-            if( left_in_addr->s_addr < right_in_addr->s_addr )
+            if( left_in_addr->s_addr <= right_in_addr->s_addr )
             {
                 result = RESULT_SUCCESS;
             }
@@ -547,3 +571,76 @@ int is_ipv4_range(char* range_str, int verbose)
 
     return(result);
 }
+
+/* Is it a valid IPv6 address range? */
+int is_ipv6_range(char* range_str, int verbose)
+{
+    int result = RESULT_SUCCESS;
+
+    int regex_check_res = regex_matches("^([0-9a-fA-F:]+\\-[0-9a-fA-F:]+)$", range_str);
+
+    if( !regex_check_res )
+    {
+        if( verbose )
+        {
+            fprintf(stderr, "Malformed range %s: must be a pair of hyphen-separated IPv6 addresses\n", range_str);
+        }
+        result = RESULT_FAILURE;
+    }
+    else
+    {
+       /* Extract sub-components from the range string. */
+
+        /* Allocate memory for the components of the range.
+           We need at most 39 characters for an IPv6 address, plus space for the terminating null byte. */
+        char left[40];
+        char right[40];
+
+        /* Split the string at the hyphen.
+           If the regex check succeeded, we know the hyphen is there. */
+        split_range(range_str, left, right);
+
+        if( !is_ipv6_single(left) )
+        {
+            if( verbose )
+            {
+                fprintf(stderr, "Malformed range %s: %s is not a valid IPv6 address\n", range_str, left);
+            }
+            result = RESULT_FAILURE;
+        }
+        else if( !is_ipv6_single(right) )
+        {
+            if( verbose )
+            {
+                fprintf(stderr, "Malformed range %s: %s is not a valid IPv6 address\n", range_str, right);
+            }
+            result = RESULT_FAILURE;
+        }
+        else
+        {
+            CIDR* left_addr = cidr_from_str(left);
+            CIDR* right_addr = cidr_from_str(right);
+            struct in6_addr* left_in6_addr = cidr_to_in6addr(left_addr, NULL);
+            struct in6_addr* right_in6_addr = cidr_to_in6addr(right_addr, NULL);
+
+            if( compare_ipv6(left_in6_addr, right_in6_addr) <= 0 )
+            {
+                result = RESULT_SUCCESS;
+            }
+            else
+            {
+                if( verbose )
+                {
+                    fprintf(stderr, "Malformed IPv6 range %s: its first address is greater than the last\n", range_str);
+                }
+                result = RESULT_FAILURE;
+            }
+
+            cidr_free(left_addr);
+            cidr_free(right_addr);
+        }
+    }
+
+    return(result);
+}
+

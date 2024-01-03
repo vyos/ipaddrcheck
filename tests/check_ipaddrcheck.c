@@ -2,7 +2,7 @@
  * check_ipaddrcheck.c: ipaddrcheck unit tests
  *
  * Copyright (C) 2013 Daniil Baturin
- * Copyright (C) 2018 VyOS maintainers and contributors
+ * Copyright (C) 2018-2024 VyOS maintainers and contributors
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or later as
@@ -408,6 +408,14 @@ START_TEST (test_is_ipv4_range)
     ck_assert_int_eq(is_ipv4_range("192.0.2.0-192.0.2.10", 0), RESULT_SUCCESS);
     ck_assert_int_eq(is_ipv4_range("192.0.2.-", 0), RESULT_FAILURE);
     ck_assert_int_eq(is_ipv4_range("192.0.2.99-192.0.2.11", 0), RESULT_FAILURE);
+}
+END_TEST
+
+START_TEST (test_is_ipv6_range)
+{
+    ck_assert_int_eq(is_ipv6_range("2001:db8::1-2001:db8::20", 0), RESULT_SUCCESS);
+    ck_assert_int_eq(is_ipv6_range("2001:-", 0), RESULT_FAILURE);
+    ck_assert_int_eq(is_ipv6_range("2001:db8::99-2001:db8:1", 0), RESULT_FAILURE);
 }
 END_TEST
 
