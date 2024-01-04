@@ -1,5 +1,5 @@
-AC_INIT([ipaddrcheck], [1.0], [maintainers@vyos.net], [ipaddrcheck], [https://github.com/vyos/ipaddrcheck])
-AC_COPYRIGHT([Copyright (c) 2018 VyOS maintainers and contributors.])
+AC_INIT([ipaddrcheck], [1.1], [maintainers@vyos.net], [ipaddrcheck], [https://github.com/vyos/ipaddrcheck])
+AC_COPYRIGHT([Copyright (c) 2024 VyOS maintainers and contributors.])
 
 #AC_PROG_CC
 AM_PROG_CC_C_O
