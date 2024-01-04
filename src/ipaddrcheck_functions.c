@@ -460,7 +460,7 @@ int is_any_net(CIDR *address)
  * This function is patently unsafe,
  * whether it's safe to do what it does should be determined by its callers.
  */
-void split_range(char* range_str, char* left, char*right)
+void split_range(char* range_str, char* left, char* right)
 {
     char* ptr = left;
     int length = strlen(range_str);
@@ -487,6 +487,9 @@ void split_range(char* range_str, char* left, char*right)
     return;
 }
 
+/* in6_addr fields are byte arrays, so we cannot compare them as numbers
+ * and needs custom comparison logic
+ */
 int compare_ipv6(struct in6_addr *left, struct in6_addr *right)
 {
     int i = 0;
@@ -501,7 +504,7 @@ int compare_ipv6(struct in6_addr *left, struct in6_addr *right)
 }
 
 /* Is it a valid IPv4 address range? */
-int is_ipv4_range(char* range_str, int verbose)
+int is_ipv4_range(char* range_str, int prefix_length, int verbose)
 {
     int result = RESULT_SUCCESS;
 
@@ -553,7 +556,33 @@ int is_ipv4_range(char* range_str, int verbose)
 
             if( left_in_addr->s_addr <= right_in_addr->s_addr )
             {
-                result = RESULT_SUCCESS;
+                /* If non-zero prefix_length is given,
+                   check if the right address is within the network of the first one. */
+                if( prefix_length > 0 )
+                {
+                    char left_pref_str[19];
+
+                    /* XXX: Prefix length size is checked elsewhere, so it can't be more than 2 characters (32)
+                       and overflow cannot occur.
+                     */
+                    sprintf(left_pref_str, "%s/%u", left, prefix_length);
+                    CIDR* left_addr_with_pref = cidr_from_str(left_pref_str);
+                    CIDR* left_net = cidr_addr_network(left_addr_with_pref);
+                    if( cidr_contains(left_net, right_addr) == 0 )
+                    {
+                        result = RESULT_SUCCESS;
+                    }
+                    else
+                    {
+                        result = RESULT_FAILURE;
+                    }
+                    cidr_free(left_addr_with_pref);
+                    cidr_free(left_net);
+                }
+                else
+                {
+                    result = RESULT_SUCCESS;
+                }
             }
             else
             {
@@ -573,7 +602,7 @@ int is_ipv4_range(char* range_str, int verbose)
 }
 
 /* Is it a valid IPv6 address range? */
-int is_ipv6_range(char* range_str, int verbose)
+int is_ipv6_range(char* range_str, int prefix_length, int verbose)
 {
     int result = RESULT_SUCCESS;
 
@@ -625,7 +654,33 @@ int is_ipv6_range(char* range_str, int verbose)
 
             if( compare_ipv6(left_in6_addr, right_in6_addr) <= 0 )
             {
-                result = RESULT_SUCCESS;
+                /* If non-zero prefix_length is given,
+                   check if the right address is within the network of the first one. */
+                if( prefix_length > 0 )
+                {
+                    char left_pref_str[44];
+
+                    /* XXX: Prefix length size is checked elsewhere, so it can't be more than 3 characters (128)
+                       and overflow cannot occur.
+                     */
+                    sprintf(left_pref_str, "%s/%u", left, prefix_length);
+                    CIDR* left_addr_with_pref = cidr_from_str(left_pref_str);
+                    CIDR* left_net = cidr_addr_network(left_addr_with_pref);
+                    if( cidr_contains(left_net, right_addr) == 0 )
+                    {
+                        result = RESULT_SUCCESS;
+                    }
+                    else
+                    {
+                        result = RESULT_FAILURE;
+                    }
+                    cidr_free(left_addr_with_pref);
+                    cidr_free(left_net);
+                }
+                else
+                {
+                    result = RESULT_SUCCESS;
+                }
             }
             else
             {

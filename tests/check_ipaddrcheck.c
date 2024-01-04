@@ -405,17 +405,31 @@ END_TEST
 
 START_TEST (test_is_ipv4_range)
 {
-    ck_assert_int_eq(is_ipv4_range("192.0.2.0-192.0.2.10", 0), RESULT_SUCCESS);
-    ck_assert_int_eq(is_ipv4_range("192.0.2.-", 0), RESULT_FAILURE);
-    ck_assert_int_eq(is_ipv4_range("192.0.2.99-192.0.2.11", 0), RESULT_FAILURE);
+    ck_assert_int_eq(is_ipv4_range("192.0.2.0-192.0.2.10", 0, 1), RESULT_SUCCESS);
+    ck_assert_int_eq(is_ipv4_range("192.0.2.-", 0, 1), RESULT_FAILURE);
+    ck_assert_int_eq(is_ipv4_range("192.0.2.99-192.0.2.11", 0, 1), RESULT_FAILURE);
+}
+END_TEST
+
+START_TEST (test_is_ipv4_range_prefix)
+{
+    ck_assert_int_eq(is_ipv4_range("192.0.2.0-192.0.2.10", 24, 1), RESULT_SUCCESS);
+    ck_assert_int_eq(is_ipv4_range("10.0.1.1-10.0.2.1", 24, 1), RESULT_FAILURE);
 }
 END_TEST
 
 START_TEST (test_is_ipv6_range)
 {
-    ck_assert_int_eq(is_ipv6_range("2001:db8::1-2001:db8::20", 0), RESULT_SUCCESS);
-    ck_assert_int_eq(is_ipv6_range("2001:-", 0), RESULT_FAILURE);
-    ck_assert_int_eq(is_ipv6_range("2001:db8::99-2001:db8:1", 0), RESULT_FAILURE);
+    ck_assert_int_eq(is_ipv6_range("2001:db8::1-2001:db8::20", 0, 1), RESULT_SUCCESS);
+    ck_assert_int_eq(is_ipv6_range("2001:-", 0, 1), RESULT_FAILURE);
+    ck_assert_int_eq(is_ipv6_range("2001:db8::99-2001:db8:1", 0, 1), RESULT_FAILURE);
+}
+END_TEST
+
+START_TEST (test_is_ipv6_range_prefix)
+{
+    ck_assert_int_eq(is_ipv6_range("2001:db8::1-2001:db8::20", 64, 1), RESULT_SUCCESS);
+    ck_assert_int_eq(is_ipv6_range("2001:db8:aaaa::1-2001:db8:bbbb::1", 64, 1), RESULT_FAILURE);
 }
 END_TEST
 

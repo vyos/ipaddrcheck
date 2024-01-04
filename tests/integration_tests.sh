@@ -284,6 +284,9 @@ do
     assert_raises "$IPADDRCHECK --is-ipv4-range $range" 1
 done
 
+assert_raises "$IPADDRCHECK --range-prefix-length 24 --is-ipv4-range 10.0.0.1-10.0.0.10" 0
+assert_raises "$IPADDRCHECK --range-prefix-length 29 --is-ipv4-range 10.0.0.1-10.0.0.10" 1
+
 # --is-ipv6-range
 for range in \
     ${ipv6_range_positive[*]}
@@ -296,5 +299,8 @@ for range in \
 do
     assert_raises "$IPADDRCHECK --is-ipv6-range $range" 1
 done
+
+assert_raises "$IPADDRCHECK --range-prefix-length 64 --is-ipv6-range 2001:db8::1-2001:db8::100" 0
+assert_raises "$IPADDRCHECK --range-prefix-length 64 --is-ipv6-range 2001:db8:aaaa::1-2001:db8:bbbb::1" 1
 
 assert_end ipaddrcheck_integration

@@ -88,6 +88,7 @@ static const struct option options[] =
     { "is-any-net",            no_argument, NULL, 'E' },
     { "is-ipv4-range",         no_argument, NULL, 'F' },
     { "is-ipv6-range",         no_argument, NULL, 'G' },
+    { "range-prefix-length",   required_argument, NULL, 'H' },
     { "version",               no_argument, NULL, 'z' },
     { "help",                  no_argument, NULL, '?' },
     { "verbose",               no_argument, NULL, 'V' },
@@ -109,6 +110,7 @@ int main(int argc, char* argv[])
     int optc;                  /* Option character for getopt call */
 
     int allow_loopback = NO_LOOPBACK;    /* Allow IPv4 loopback in --is-valid-intf-address */
+    int range_prefix_length = 0;
 
     int no_action = 0;   /* Indicates the option modifies program behaviour
                             but doesn't have its own action */
@@ -124,9 +126,9 @@ int main(int argc, char* argv[])
     const char* program_name = argv[0]; /* Program name for use in messages */
 
 
-    /* Parse options, convert to action codes, store in array */
+    /* Parse options, convert to action codes, store in an array. */
 
-    /* Try to allocate memory for the actions array, abort if fail */
+    /* Try to allocate memory for the actions array, abort if the attempt fails. */
     actions = (int*)calloc(argc, sizeof(int));
     if( errno == ENOMEM )
     {
@@ -134,7 +136,7 @@ int main(int argc, char* argv[])
         return(RESULT_INT_ERROR);
     }
 
-    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABCDEFGV?", options, &option_index)) != -1 )
+    while( (optc = getopt_long(argc, argv, "acdefghijklmnoprstuzABCDEFGHV?", options, &option_index)) != -1 )
     {
          switch(optc)
          {
@@ -219,6 +221,26 @@ int main(int argc, char* argv[])
              case 'G':
                  ipv6_range_check = 1;
                  break;
+             case 'H':
+                 errno = 0;
+                 char* endptr = "";
+                 /* Reminder to the reader on the quirks of strtol:
+                  * errno != 0 --- internal parse error
+                  * endptr == optarg --- no digits found in the string
+                  * *endptr != '\0' --- extra characters after the last digit
+                  */
+                 range_prefix_length = (int)strtol(optarg, &endptr, 10);
+                 if( (errno != 0) || (endptr == optarg) || (*endptr != '\0') )
+                 {
+                     fprintf(stderr, "Error: \"%s\" is not a valid prefix length\n", optarg);
+                     return(RESULT_INT_ERROR);
+                 }
+                 if( (range_prefix_length < 0) || (range_prefix_length > 128) )
+                 {
+                     fprintf(stderr, "Error: \"%s\" is not a valid prefix length\n", optarg);
+                     return(RESULT_INT_ERROR);
+                 }
+                 break;
              case 'V':
                  verbose = 1;
                  break;
@@ -268,8 +290,13 @@ int main(int argc, char* argv[])
     /* If the argument is a range, use special functions that can handle it. */
     if( ipv4_range_check )
     {
-        int result = is_ipv4_range(address_str, verbose);
+        if( range_prefix_length > 32 )
+        {
+            fprintf(stderr, "Error: prefix length cannot exceed 32 for IPv4!\n");
+            return(RESULT_INT_ERROR);
+        }
 
+        int result = is_ipv4_range(address_str, range_prefix_length, verbose);
         if( result == RESULT_SUCCESS )
         {
             return(EXIT_SUCCESS);
@@ -282,8 +309,13 @@ int main(int argc, char* argv[])
 
     if( ipv6_range_check )
     {
-        int result = is_ipv6_range(address_str, verbose);
+        if( range_prefix_length > 128 )
+        {
+            fprintf(stderr, "Error: prefix length cannot exceed 32 for IPv4!\n");
+            return(RESULT_INT_ERROR);
+        }
 
+        int result = is_ipv6_range(address_str, range_prefix_length, verbose);
         if( result == RESULT_SUCCESS )
         {
             return(EXIT_SUCCESS);
@@ -633,8 +665,11 @@ Address checking options:\n\
   --is-ipv6-range            Check if STRING is a valid IPv6 address range\n\
   \n\
 Behavior options:\n\
-  --allow-loopback           When used with --is-valid-intf-address,\n\
-                               makes IPv4 loopback addresses pass the check\n\
+  --allow-loopback             When used with --is-valid-intf-address,\n\
+                                 makes IPv4 loopback addresses pass the check\n\
+  --range-prefix-length <INT>  When used with --is-ipv4-range or --is-ipv6-range,\n\
+                                 requires the range boundaries to lie within\n\
+                                 a prefix of given length\n\
 \n\
 Other options:\n\
   --version                  Print version information and exit \n\

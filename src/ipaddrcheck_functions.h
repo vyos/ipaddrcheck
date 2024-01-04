@@ -76,7 +76,7 @@ int is_ipv6_link_local(CIDR *address);
 int is_valid_intf_address(CIDR *address, char* address_str, int allow_loopback);
 int is_any_host(CIDR *address);
 int is_any_net(CIDR *address);
-int is_ipv4_range(char* range_str, int verbose);
-int is_ipv6_range(char* range_str, int verbose);
+int is_ipv4_range(char* range_str, int prefix_length, int verbose);
+int is_ipv6_range(char* range_str, int prefix_length, int verbose);
 
 #endif /* IPADDRCHECK_FUNCTIONS_H */
