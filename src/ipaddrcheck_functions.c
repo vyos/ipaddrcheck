@@ -324,6 +324,21 @@ int is_ipv6_host(CIDR *address)
 {
     int result;
 
+    /* We reuse the same logic that prevents IPv4 network addresses
+       from being assigned to interfaces (address == network_address),
+       but the reason is slightly differnt.
+
+       As per https://www.rfc-editor.org/rfc/rfc4291 section 2.6.1,
+       >[Subnet-Router anycast address] is syntactically
+       >the same as a unicast address for an interface on the link with the
+       >interface identifier set to zero.
+
+       So, the first address of the subnet must not be used for link addresses,
+       even if the semantic reason is different.
+       There's absolutely nothing wrong with assigning the last address, though,
+       since there's no broadcast in IPv6.
+      */
+
     if( (cidr_get_proto(address) == CIDR_IPV6) &&
         ((cidr_equals(address, cidr_addr_network(address)) < 0) ||
         (cidr_get_pflen(address) >= 127)) )
