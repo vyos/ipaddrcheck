@@ -578,10 +578,13 @@ int is_ipv4_range(char* range_str, int prefix_length, int verbose)
                 {
                     char left_pref_str[19];
 
-                    /* XXX: Prefix length size is checked elsewhere, so it can't be more than 2 characters (32)
+                    /* XXX: Prefix length size is checked elsewhere with a regex, so it can't be more than 2 characters (32)
                        and overflow cannot occur.
                      */
+                    #pragma GCC diagnostic push
+                    #pragma GCC diagnostic ignored "-Wformat-overflow="
                     sprintf(left_pref_str, "%s/%u", left, prefix_length);
+                    #pragma GCC diagnostic pop
                     CIDR* left_addr_with_pref = cidr_from_str(left_pref_str);
                     CIDR* left_net = cidr_addr_network(left_addr_with_pref);
                     if( cidr_contains(left_net, right_addr) == 0 )
@@ -679,10 +682,13 @@ int is_ipv6_range(char* range_str, int prefix_length, int verbose)
                 {
                     char left_pref_str[44];
 
-                    /* XXX: Prefix length size is checked elsewhere, so it can't be more than 3 characters (128)
+                    /* XXX: Prefix length size is checked elsewhere with a regex, so it can't be more than 3 characters (128)
                        and overflow cannot occur.
                      */
+                    #pragma GCC diagnostic push
+                    #pragma GCC diagnostic ignored "-Wformat-overflow="
                     sprintf(left_pref_str, "%s/%u", left, prefix_length);
+                    #pragma GCC diagnostic pop
                     CIDR* left_addr_with_pref = cidr_from_str(left_pref_str);
                     CIDR* left_net = cidr_addr_network(left_addr_with_pref);
                     if( cidr_contains(left_net, right_addr) == 0 )
