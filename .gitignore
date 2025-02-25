@@ -1,0 +1,79 @@
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Autotools-generated files
+
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/
+compile
+config.status
+configure
+depcomp
+install-sh
+man/Makefile
+man/Makefile.in
+missing
+src/.deps/
+src/.dirstamp
+src/Makefile
+src/Makefile.in
+src/config.h
+src/config.h.in
+src/stamp-h1
+test-driver
+tests/.deps/
+tests/Makefile
+tests/Makefile.in
+
+# Misc
+
+*.log
+*.trs
+
+# Build artifacts
+
+src/ipaddrcheck
+tests/check_ipaddrcheck
