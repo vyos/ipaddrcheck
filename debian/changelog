@@ -1,3 +1,12 @@
+ipaddrcheck (1.3) unstable; urgency=medium
+
+  * New option --range-prefix-length to require ranges to be within a subnet (Daniil Baturin).
+  * Options for checking IP ranges: --is-ipv4-range and --is-ipv6-range (Daniil Baturin).
+  * Fixed linker flags to build correctly on Debian Bullseye (John Eastabrook).
+  * Removed stale dependency on libcidr0-dev (Christian Breunig).
+
+ -- Daniil Baturin <daniil@vyos.io>  Tue, 25 Feb 2025 18:21:43 +0000
+
 ipaddrcheck (1.2) unstable; urgency=medium
 
   * Correct recognition of IPv4 /31 and IPv6 /127 as valid host addresses.
