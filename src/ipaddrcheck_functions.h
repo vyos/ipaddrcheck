@@ -23,11 +23,13 @@
 #ifndef IPADDRCHECK_FUNCTIONS_H
 #define IPADDRCHECK_FUNCTIONS_H
 
+#define PCRE2_CODE_UNIT_WIDTH 8
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
-#include <pcre.h>
+#include <pcre2.h>
 #include <libcidr.h>
 
 #define INVALID_PROTO -1

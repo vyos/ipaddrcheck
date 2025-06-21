@@ -41,25 +41,31 @@
 
 int regex_matches(const char* regex, const char* str)
 {
-    int offsets[1];
-    pcre *re;
+    pcre2_code *re;
     int rc;
-    const char *error;
-    int erroffset;
+    int out;
+    int error;
+    PCRE2_SIZE erroffset;
 
-    re = pcre_compile(regex, 0, &error, &erroffset, NULL);
+    re = pcre2_compile((PCRE2_SPTR)regex, PCRE2_ZERO_TERMINATED, 0, &error, &erroffset, NULL);
     assert(re != NULL);
 
-    rc = pcre_exec(re, NULL, str, strlen(str), 0, 0, offsets, 1);
+    pcre2_match_data *match = pcre2_match_data_create_from_pattern(re, NULL);
+
+    rc = pcre2_match(re, (PCRE2_SPTR)str, strlen(str), 0, 0, match, NULL);
 
     if( rc >= 0)
     {
-        return RESULT_SUCCESS;
+        out = RESULT_SUCCESS;
     }
     else
     {
-        return RESULT_FAILURE;
+        out = RESULT_FAILURE;
     }
+
+    pcre2_match_data_free(match);
+    pcre2_code_free(re);
+    return out;
 }
 
 
