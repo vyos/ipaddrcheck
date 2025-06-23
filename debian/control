@@ -2,11 +2,11 @@ Source: ipaddrcheck
 Section: contrib/net
 Priority: extra
 Maintainer: VyOS Package Maintainers <maintainers@vyos.net>
-Build-Depends: autoconf, debhelper (>= 9), libpcre3-dev, libcidr-dev, check
+Build-Depends: autoconf, debhelper (>= 9), libpcre2-dev, libcidr-dev, check
 Standards-Version: 3.9.6
 
 Package: ipaddrcheck
 Architecture: any
-Depends: libpcre3, libcidr0, ${shlibs:Depends}, ${misc:Depends}
+Depends: libpcre2-8-0, libcidr0, ${shlibs:Depends}, ${misc:Depends}
 Description: IPv4 and IPv6 address validation utility
  A validation utility for IPv4 and IPv6 addresses.
