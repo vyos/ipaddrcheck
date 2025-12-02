@@ -2,7 +2,7 @@
  * check_ipaddrcheck.c: ipaddrcheck unit tests
  *
  * Copyright (C) 2013 Daniil Baturin
- * Copyright (C) 2018-2024 VyOS maintainers and contributors
+ * Copyright (C) 2018-2025 VyOS maintainers and contributors
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or later as
@@ -289,11 +289,6 @@ START_TEST (test_is_ipv6_host)
     CIDR* good_address_cidr = cidr_from_str(good_address_str_cidr);
     ck_assert_int_eq(is_ipv6_host(good_address_cidr), RESULT_SUCCESS);
     cidr_free(good_address_cidr);
-
-    char* bad_address_str = "2001:db8:f::/48";
-    CIDR* bad_address = cidr_from_str(bad_address_str);
-    ck_assert_int_eq(is_ipv6_host(bad_address), RESULT_FAILURE);
-    cidr_free(bad_address);
 }
 END_TEST
 
@@ -367,15 +362,20 @@ START_TEST (test_is_any_host)
     ck_assert_int_eq(is_any_host(good_address_v6), RESULT_SUCCESS);
     cidr_free(good_address_v6);
 
+    char* good_address_str_v6_all_zero = "2001:db8::/32";
+    CIDR* good_address_v6_all_zero = cidr_from_str(good_address_str_v6_all_zero);
+    ck_assert_int_eq(is_any_host(good_address_v6_all_zero), RESULT_SUCCESS);
+    cidr_free(good_address_v6_all_zero);
+
     char* bad_address_str_v4 = "192.0.2.0/24";
     CIDR* bad_address_v4 = cidr_from_str(bad_address_str_v4);
     ck_assert_int_eq(is_any_host(bad_address_v4), RESULT_FAILURE);
     cidr_free(bad_address_v4);
 
-    char* bad_address_str_v6 = "2001:db8::/32";
-    CIDR* bad_address_v6 = cidr_from_str(bad_address_str_v6);
-    ck_assert_int_eq(is_any_host(bad_address_v6), RESULT_FAILURE);
-    cidr_free(bad_address_v6);
+    char* bad_address_str_v6_unspec = "::/0";
+    CIDR* bad_address_v6_unspec = cidr_from_str(bad_address_str_v6_unspec);
+    ck_assert_int_eq(is_any_host(bad_address_v6_unspec), RESULT_FAILURE);
+    cidr_free(bad_address_v6_unspec);
 }
 END_TEST
 

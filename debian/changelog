@@ -1,3 +1,9 @@
+ipaddrcheck (1.4) unstable; urgency=medium
+
+  * Do not disallow all-zero host part IPv6 addresses for host and interface address checks  (Daniil Baturin).
+
+ -- Daniil Baturin <daniil@vyos.io>  Fri, 05 Dec 2025 15:04:03 +0000
+
 ipaddrcheck (1.3) unstable; urgency=medium
 
   * New option --range-prefix-length to require ranges to be within a subnet (Daniil Baturin).
