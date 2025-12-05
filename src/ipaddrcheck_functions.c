@@ -2,7 +2,7 @@
  * ipaddrcheck_functions.c: IPv4/IPv6 validation functions for ipaddrcheck
  *
  * Copyright (C) 2013 Daniil Baturin
- * Copyright (C) 2018-2024 VyOS maintainers and contributors
+ * Copyright (C) 2018-2025 VyOS maintainers and contributors
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -325,29 +325,15 @@ int is_ipv6(CIDR *address)
      return(result);
 }
 
-/* Is it a correct IPv6 host address? */
+/* Is it a correct IPv6 host address?
+   Everything except the unspecified address is.
+ */
 int is_ipv6_host(CIDR *address)
 {
     int result;
 
-    /* We reuse the same logic that prevents IPv4 network addresses
-       from being assigned to interfaces (address == network_address),
-       but the reason is slightly differnt.
-
-       As per https://www.rfc-editor.org/rfc/rfc4291 section 2.6.1,
-       >[Subnet-Router anycast address] is syntactically
-       >the same as a unicast address for an interface on the link with the
-       >interface identifier set to zero.
-
-       So, the first address of the subnet must not be used for link addresses,
-       even if the semantic reason is different.
-       There's absolutely nothing wrong with assigning the last address, though,
-       since there's no broadcast in IPv6.
-      */
-
     if( (cidr_get_proto(address) == CIDR_IPV6) &&
-        ((cidr_equals(address, cidr_addr_network(address)) < 0) ||
-        (cidr_get_pflen(address) >= 127)) )
+        (cidr_equals(address, cidr_from_str(IPV6_UNSPECIFIED)) != 0) )
     {
          result = RESULT_SUCCESS;
     }

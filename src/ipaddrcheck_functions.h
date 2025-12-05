@@ -2,7 +2,7 @@
  * ipaddrcheck_functions.h: macros and prototypes for ipaddrcheck
  *
  * Copyright (C) 2013 Daniil Baturin
- * Copyright (C) 2018-2024 VyOS maintainers and contributors
+ * Copyright (C) 2018-2025 VyOS maintainers and contributors
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,6 +50,7 @@
 #define IPV6_MULTICAST "ff00::/8"
 #define IPV6_LINKLOCAL "fe80::/64"
 #define IPV6_LOOPBACK  "::1/128"
+#define IPV6_UNSPECIFIED "::/0"
 
 #define NO_LOOPBACK      0
 #define LOOPBACK_ALLOWED 1

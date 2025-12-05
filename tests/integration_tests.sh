@@ -3,7 +3,7 @@
 # integration_tests.sh: ipaddrcheck integration tests
 #
 # Copyright (C) 2013 Daniil Baturin
-# Copyright (C) 2018-2024 VyOS maintainers and contributors
+# Copyright (C) 2018-2025 VyOS maintainers and contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 or later as
@@ -59,6 +59,28 @@ ipv4_range_negative=(
     192.0.2.1-192.0.2.500
 )
 
+ipv4_interface_address_positive=(
+    192.0.2.1/24
+    192.168.1.0/23
+)
+
+ipv4_interface_address_negative=(
+    192.0.2.0/24 # Network address
+    192.0.2.255/24 # Broadcast
+    224.0.0.1/24 # Multicast
+    0.0.0.0/0 # Unspecified
+)
+
+ipv6_interface_address_positive=(
+    2001:db8::1/64
+    2001:db8::/64
+)
+
+ipv6_interface_address_negative=(
+    ff02::1:2 # Multicast
+    ::/0 # Unspecified
+)
+
 ipv6_range_positive=(
     2001:db8::1-2001:db8::99
 )
@@ -111,10 +133,11 @@ ipv4_host_negative=(
 ipv6_host_positive=(
     2001:db8:1::1/64
     2001:db8:1::1/127
+    2001:db8:1::/64 # All-zero IPv6 addresses are valid host addresses
 )
 
 ipv6_host_negative=(
-    2001:db8::/32
+    ::/0
 )
 
 string="garbage"
@@ -272,7 +295,31 @@ done
 # --is-ipv6-net
 # --is-ipv6-multicast
 # --is-ipv6-link-local
+
 # --is-valid-intf-address
+for address in \
+    ${ipv4_interface_address_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-valid-intf-address $address" 0
+done
+
+for address in \
+    ${ipv4_interface_address_negative[*]}
+do
+    assert_raises "$IPADDRCHECK --is-valid-intf-address $address" 1
+done
+
+for address in \
+    ${ipv6_interface_address_positive[*]}
+do
+    assert_raises "$IPADDRCHECK --is-valid-intf-address $address" 0
+done
+
+for address in \
+    ${ipv6_interface_address_negative[*]}
+do
+    assert_raises "$IPADDRCHECK --is-valid-intf-address $address" 1
+done
 
 # --is-ipv4-range
 for range in \
