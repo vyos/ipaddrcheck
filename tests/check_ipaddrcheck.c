@@ -408,6 +408,7 @@ START_TEST (test_is_ipv4_range)
     ck_assert_int_eq(is_ipv4_range("192.0.2.0-192.0.2.10", 0, 1), RESULT_SUCCESS);
     ck_assert_int_eq(is_ipv4_range("192.0.2.-", 0, 1), RESULT_FAILURE);
     ck_assert_int_eq(is_ipv4_range("192.0.2.99-192.0.2.11", 0, 1), RESULT_FAILURE);
+    ck_assert_int_eq(is_ipv4_range("192.0.2.0-1.8.2.1", 0, 1), RESULT_FAILURE);
 }
 END_TEST
 

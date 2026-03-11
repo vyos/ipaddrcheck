@@ -562,7 +562,7 @@ int is_ipv4_range(char* range_str, int prefix_length, int verbose)
             struct in_addr* left_in_addr = cidr_to_inaddr(left_addr, NULL);
             struct in_addr* right_in_addr = cidr_to_inaddr(right_addr, NULL);
 
-            if( left_in_addr->s_addr <= right_in_addr->s_addr )
+            if( ntohl(left_in_addr->s_addr) <= ntohl(right_in_addr->s_addr) )
             {
                 /* If non-zero prefix_length is given,
                    check if the right address is within the network of the first one. */
