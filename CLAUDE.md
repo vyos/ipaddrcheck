@@ -49,7 +49,3 @@ Mirror twin: `VyOS-Networks/ipaddrcheck`. Canonical side is **here** (`vyos/ipad
 - Used as a CLI-level validator — exit status 0/1 is the contract. Don't break stdout/stderr conventions or add chatty output.
 - `libcidr` is by Matthew Fuller (http://www.over-yonder.net/~fullermd/projects/libcidr) — Debian-packaged.
 - Adding a new flag: extend `src/ipaddrcheck.c`'s argument table and add a libcheck test under `tests/`.
-
----
-
-This file is mirrored on Confluence: [`vyos/ipaddrcheck`](https://internal.confluence.vyos.com/wiki/spaces/VYOS/pages/818479310). The Confluence page also carries the per-repo audit data (settings, workflows, secret counts, hygiene) that complements this CLAUDE.md. Edit either side; resync via the documentation pipeline.
