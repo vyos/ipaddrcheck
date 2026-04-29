@@ -8,7 +8,7 @@ C utility for IPv4/IPv6 address and prefix validation in shell scripts. Used by 
 
 - C, autotools (`configure.ac`, `Makefile.am`, autoconf 2.x).
 - Dependencies: `libcidr` (parsing), `libpcre2-8` (regex), `check >= 0.9.4` (test framework).
-- Debian packaging under `debian/`. Current source version `1.1`.
+- Debian packaging under `debian/`. Upstream autotools version `1.1` (`configure.ac`); current Debian package version `1.4` (`debian/changelog`).
 
 ## Build / test / run
 
@@ -25,7 +25,7 @@ dpkg-buildpackage -uc -us -tc -b
 ## Repository layout
 
 - `src/` — C sources (`ipaddrcheck.c`, headers, autotools `Makefile.am`).
-- `tests/` — libcheck unit tests.
+- `tests/` — libcheck C unit tests (`check_ipaddrcheck.c`) and shell integration tests (`assert.sh`, `integration_tests.sh`).
 - `man/` — manpages.
 - `debian/` — Debian packaging.
 - `configure.ac`, `Makefile.am`, `INSTALL`, `NEWS`, `ChangeLog`, `AUTHORS`, `COPYING` (GPL-2), `COPYING-LGPL` (LGPL-2.1).
