@@ -32,17 +32,13 @@ dpkg-buildpackage -uc -us -tc -b
 
 ## Cross-repo context
 
-One of the canonical 14 VyOS-image build packages, listed in `VyOS-Networks/vyos-build-packages/repos.toml`. Built into VyOS images by `vyos-build` and invoked at runtime by `vyos-1x` validators and conf-mode scripts. Sits in the §3.5 native-libraries category alongside `hvinfo`, `udp-broadcast-relay`, etc.
+One of the canonical 14 VyOS-image build packages, listed in an internal repository. Built into VyOS images by `vyos-build` and invoked at runtime by `vyos-1x` validators and conf-mode scripts. Sits in the §3.5 native-libraries category alongside `hvinfo`, `udp-broadcast-relay`, etc.
 
 ## Conventions
 
 - Commit / PR title format: `component: T12345: description` (Phorge task ID at https://vyos.dev mandatory). Enforced by `vyos/.github` reusable workflows where consumed.
 - Branch model: `current` (rolling), `circinus` (1.5 LTS), `sagitta` (1.4 LTS), `equuleus` (1.3 LTS).
 - Maintained by the VyOS team (`maintainers@vyos.net`); license is GPL-2 + LGPL-2.1 dual.
-
-## Mirror relationship
-
-Mirror twin: `VyOS-Networks/ipaddrcheck`. Canonical side is **here** (`vyos/ipaddrcheck`).
 
 ## Notes for future contributors
 
