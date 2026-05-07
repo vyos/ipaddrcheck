@@ -2,7 +2,7 @@
 
 ## Project purpose
 
-C utility for IPv4/IPv6 address and prefix validation in shell scripts. Used by VyOS as the canonical "is this string a valid IP / network / host / CIDR?" checker invoked from XML validators and conf-mode scripts. Fast and exit-status-driven (intended for `if ipaddrcheck --is-ipv4 ...; then ...`).
+C utility for IPv4/IPv6 address and prefix validation in shell scripts. Used by VyOS as the canonical "is this string a valid IP / network / host / CIDR?" checker invoked from XML validators and conf-mode scripts. Fast and exit-status-driven (intended for `if ipaddrcheck --is-ipv4...; then...`).
 
 ## Tech stack
 
