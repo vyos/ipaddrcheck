@@ -37,7 +37,7 @@ One of the canonical 14 VyOS-image build packages, listed in an internal reposit
 ## Conventions
 
 - Commit / PR title format: `component: T12345: description` (Phorge task ID at https://vyos.dev mandatory). Enforced by `vyos/.github` reusable workflows where consumed.
-- Branch model: `current` (rolling), `circinus` (1.5 LTS), `sagitta` (1.4 LTS), `equuleus` (1.3 LTS).
+- Branch model: `rolling`, `circinus` (1.5 LTS), `sagitta` (1.4 LTS), `equuleus` (1.3 LTS).
 - Maintained by the VyOS team (`maintainers@vyos.net`); license is GPL-2 + LGPL-2.1 dual.
 
 ## Notes for future contributors
