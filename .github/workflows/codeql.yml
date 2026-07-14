@@ -4,9 +4,17 @@ on:
   push:
     branches:
       - rolling
+    paths:
+      - '**'
+      - '!.github/**'
+      - '!**/*.md'
   pull_request:
     branches:
       - rolling
+    paths:
+      - '**'
+      - '!.github/**'
+      - '!**/*.md'
   schedule:
     - cron: '28 13 * * 0'
 
@@ -17,7 +25,7 @@ permissions:
 
 jobs:
   codeql-analysis-call:
-    uses: vyos/.github/.github/workflows/codeql-analysis.yml@b0082401423f12eb68200266227edc8bb54c9937
+    uses: vyos/.github/.github/workflows/codeql-analysis.yml@production
     with:
       languages: "['c-cpp']"
       build-mode: "none"
